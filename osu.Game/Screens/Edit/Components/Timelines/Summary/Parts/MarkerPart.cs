@@ -3,10 +3,10 @@
 
 using OpenTK;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Framework.Timing;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
@@ -29,17 +29,17 @@ namespace osu.Game.Screens.Edit.Components.Timelines.Summary.Parts
             Add(marker = new MarkerVisualisation());
         }
 
-        protected override bool OnDragStart(InputState state) => true;
-        protected override bool OnDragEnd(InputState state) => true;
-        protected override bool OnDrag(InputState state)
+        protected override bool OnDragStart(DragStartEventArgs args) => true;
+        protected override bool OnDragEnd(DragEndEventArgs args) => true;
+        protected override bool OnDrag(DragEventArgs args)
         {
-            seekToPosition(state.Mouse.NativeState.Position);
+            seekToPosition(args.ScreenMousePosition);
             return true;
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
-            seekToPosition(state.Mouse.NativeState.Position);
+            seekToPosition(args.ScreenMousePosition);
             return true;
         }
 

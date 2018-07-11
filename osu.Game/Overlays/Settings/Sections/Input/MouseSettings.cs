@@ -3,6 +3,7 @@
 
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Input;
 using osu.Game.Configuration;
@@ -123,18 +124,18 @@ namespace osu.Game.Overlays.Settings.Sections.Input
 
             private bool isDragging;
 
-            protected override bool OnDragStart(InputState state)
+            protected override bool OnDragStart(DragStartEventArgs args)
             {
                 isDragging = true;
-                return base.OnDragStart(state);
+                return base.OnDragStart(args);
             }
 
-            protected override bool OnDragEnd(InputState state)
+            protected override bool OnDragEnd(DragEndEventArgs args)
             {
                 isDragging = false;
                 Current.TriggerChange();
 
-                return base.OnDragEnd(state);
+                return base.OnDragEnd(args);
             }
 
             public override string TooltipText => Current.Disabled ? "Enable raw input to adjust sensitivity" : Current.Value.ToString(@"0.##x");

@@ -6,11 +6,11 @@ using osu.Framework.Allocation;
 using osu.Framework.Caching;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using OpenTK;
 using OpenTK.Input;
 using OpenTK.Graphics;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Shapes;
 using osu.Game.Rulesets;
 
@@ -85,11 +85,11 @@ namespace osu.Game.Overlays.Toolbar
             ruleset.BindTo(parentRuleset);
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
-            base.OnKeyDown(state, args);
+            base.OnKeyDown(args);
 
-            if (state.Keyboard.ControlPressed && !args.Repeat && args.Key >= Key.Number1 && args.Key <= Key.Number9)
+            if (args.State.Keyboard.ControlPressed && !args.Repeat && args.Key >= Key.Number1 && args.Key <= Key.Number9)
             {
                 int requested = args.Key - Key.Number1;
 

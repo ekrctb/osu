@@ -4,7 +4,6 @@
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Game.Graphics.Sprites;
@@ -13,6 +12,7 @@ using osu.Game.Graphics.Containers;
 using osu.Game.Beatmaps.ControlPoints;
 using osu.Framework.Audio.Track;
 using System;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Shapes;
 
 namespace osu.Game.Graphics.UserInterface
@@ -171,7 +171,7 @@ namespace osu.Game.Graphics.UserInterface
 
         public override bool ReceiveMouseInputAt(Vector2 screenSpacePos) => IconLayer.ReceiveMouseInputAt(screenSpacePos) || TextLayer.ReceiveMouseInputAt(screenSpacePos);
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             this.ResizeTo(SIZE_EXTENDED, transform_time, Easing.OutElastic);
             IconLayer.FadeColour(HoverColour, transform_time, Easing.OutElastic);
@@ -181,7 +181,7 @@ namespace osu.Game.Graphics.UserInterface
             return true;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             this.ResizeTo(SIZE_RETRACTED, transform_time, Easing.OutElastic);
             IconLayer.FadeColour(TextLayer.Colour, transform_time, Easing.OutElastic);
@@ -189,12 +189,12 @@ namespace osu.Game.Graphics.UserInterface
             bouncingIcon.ScaleTo(1, transform_time, Easing.OutElastic);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             return true;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             var flash = new Box
             {
@@ -208,7 +208,7 @@ namespace osu.Game.Graphics.UserInterface
             flash.FadeOut(500, Easing.OutQuint);
             flash.Expire();
 
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
         private class BouncingIcon : BeatSyncedContainer

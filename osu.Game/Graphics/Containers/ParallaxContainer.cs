@@ -67,7 +67,8 @@ namespace osu.Game.Graphics.Containers
 
             if (parallaxEnabled)
             {
-                Vector2 offset = (input.CurrentState.Mouse == null ? Vector2.Zero : ToLocalSpace(input.CurrentState.Mouse.NativeState.Position) - DrawSize / 2) * ParallaxAmount;
+                var mouse = input.CurrentState.Mouse;
+                Vector2 offset = (mouse.HasUninitializedPosition ? Vector2.Zero : ToLocalSpace(mouse.Position) - DrawSize / 2) * ParallaxAmount;
 
                 double elapsed = MathHelper.Clamp(Clock.ElapsedFrameTime, 0, 1000);
 

@@ -3,9 +3,9 @@
 
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Framework.Timing;
 using osu.Game.Beatmaps;
 using osu.Game.Configuration;
@@ -151,11 +151,11 @@ namespace osu.Game.Screens.Play
             Progress.BindRulestContainer(rulesetContainer);
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (args.Repeat) return false;
 
-            if (state.Keyboard.ShiftPressed)
+            if (args.State.Keyboard.ShiftPressed)
             {
                 switch (args.Key)
                 {
@@ -165,7 +165,7 @@ namespace osu.Game.Screens.Play
                 }
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
         protected virtual RollingCounter<double> CreateAccuracyCounter() => new PercentageCounter

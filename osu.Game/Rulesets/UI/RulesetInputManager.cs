@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input;
@@ -55,23 +56,12 @@ namespace osu.Game.Rulesets.UI
 
         private List<T> lastPressedActions = new List<T>();
 
-        public override void HandleCustomInput(InputState state, IInput input)
+        public virtual void HandleReplayState(ReplayStateChangedArgs<T> args)
         {
-            if (!(input is ReplayState<T> replayState))
-            {
-                base.HandleCustomInput(state, input);
-                return;
-            }
-
-            if (state is RulesetInputManagerInputState<T> inputState)
-            {
-                inputState.LastReplayState = replayState;
-            }
-
             // Here we handle states specifically coming from a replay source.
             // These have extra action information rather than keyboard keys or mouse buttons.
 
-            List<T> newActions = replayState.PressedActions;
+            List<T> newActions = args.ReplayState.PressedActions;
 
             foreach (var released in lastPressedActions.Except(newActions))
                 KeyBindingContainer.TriggerReleased(released);
@@ -222,16 +212,16 @@ namespace osu.Game.Rulesets.UI
             mouseDisabled = config.GetBindable<bool>(OsuSetting.MouseDisableButtons);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             if (mouseDisabled.Value && (args.Button == MouseButton.Left || args.Button == MouseButton.Right)) return false;
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             if (!CurrentState.Mouse.IsPressed(args.Button)) return false;
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         #endregion

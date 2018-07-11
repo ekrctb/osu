@@ -10,9 +10,9 @@ using osu.Framework.Graphics.Colour;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Localisation;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Beatmaps;
 
 namespace osu.Game.Overlays.Direct
@@ -185,16 +185,16 @@ namespace osu.Game.Overlays.Direct
             });
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             downloadContainer.FadeIn(transition_duration, Easing.InOutQuint);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             downloadContainer.FadeOut(transition_duration, Easing.InOutQuint);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
     }
 }

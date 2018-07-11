@@ -8,12 +8,13 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Game.Configuration;
 using System;
 using JetBrains.Annotations;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Textures;
 using OpenTK.Input;
+using MouseMoveEventArgs = osu.Framework.EventArgs.MouseMoveEventArgs;
 
 namespace osu.Game.Graphics.Cursor
 {
@@ -39,11 +40,11 @@ namespace osu.Game.Graphics.Cursor
                 screenshotCursorVisibility.BindTo(screenshotManager.CursorVisibility);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
             if (dragRotationState != DragRotationState.NotDragging)
             {
-                var position = state.Mouse.Position;
+                var position = args.MousePosition;
                 var distance = Vector2Extensions.Distance(position, positionMouseDown);
                 // don't start rotating until we're moved a minimum distance away from the mouse down location,
                 // else it can have an annoying effect.
@@ -52,7 +53,7 @@ namespace osu.Game.Graphics.Cursor
                 // don't rotate when distance is zero to avoid NaN
                 if (dragRotationState == DragRotationState.Rotating && distance > 0)
                 {
-                    Vector2 offset = state.Mouse.Position - positionMouseDown;
+                    Vector2 offset = position - positionMouseDown;
                     float degrees = (float)MathHelper.RadiansToDegrees(Math.Atan2(-offset.X, offset.Y)) + 24.3f;
 
                     // Always rotate in the direction of least distance
@@ -65,10 +66,10 @@ namespace osu.Game.Graphics.Cursor
                 }
             }
 
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             // only trigger animation for main mouse buttons
             if (args.Button <= MouseButton.Right)
@@ -83,14 +84,14 @@ namespace osu.Game.Graphics.Cursor
             if (args.Button == MouseButton.Left && cursorRotate)
             {
                 dragRotationState = DragRotationState.DragStarted;
-                positionMouseDown = state.Mouse.Position;
+                positionMouseDown = args.MousePosition;
             }
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
-            if (!state.Mouse.HasMainButtonPressed)
+            if (!args.State.Mouse.HasMainButtonPressed)
             {
                 activeCursor.AdditiveLayer.FadeOutFromOne(500, Easing.OutQuint);
                 activeCursor.ScaleTo(1, 500, Easing.OutElastic);
@@ -102,7 +103,7 @@ namespace osu.Game.Graphics.Cursor
                     activeCursor.RotateTo(0, 600 * (1 + Math.Abs(activeCursor.Rotation / 720)), Easing.OutElasticHalf);
                 dragRotationState = DragRotationState.NotDragging;
             }
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         protected override void PopIn()

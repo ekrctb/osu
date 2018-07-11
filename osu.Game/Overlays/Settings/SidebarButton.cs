@@ -5,11 +5,11 @@ using System;
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
@@ -107,22 +107,22 @@ namespace osu.Game.Overlays.Settings
             selectionIndicator.Colour = colours.Yellow;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             Action?.Invoke(section);
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             Background.FadeTo(0.4f, 200);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             Background.FadeTo(0, 200);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
     }
 }

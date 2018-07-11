@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.OpenGL.Buffers;
 using osu.Framework.Graphics.OpenGL.Vertices;
@@ -116,15 +117,15 @@ namespace osu.Game.Rulesets.Osu.UI.Cursor
             timeOffset = Time.Current;
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
-            Vector2 pos = state.Mouse.NativeState.Position;
+            Vector2 pos = args.ScreenMousePosition;
 
             if (lastPosition == null)
             {
                 lastPosition = pos;
                 resampler.AddPosition(lastPosition.Value);
-                return base.OnMouseMove(state);
+                return base.OnMouseMove(args);
             }
 
             foreach (Vector2 pos2 in resampler.AddPosition(pos))
@@ -146,7 +147,7 @@ namespace osu.Game.Rulesets.Osu.UI.Cursor
                 }
             }
 
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
         private void addPosition(Vector2 pos)

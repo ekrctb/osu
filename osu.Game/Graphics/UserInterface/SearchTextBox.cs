@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 using OpenTK;
 using OpenTK.Input;
 
@@ -32,8 +32,9 @@ namespace osu.Game.Graphics.UserInterface
             PlaceholderText = "type to search";
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
+            var state = args.State;
             if (!state.Keyboard.ControlPressed && !state.Keyboard.ShiftPressed)
             {
                 switch (args.Key)
@@ -65,7 +66,7 @@ namespace osu.Game.Graphics.UserInterface
                 }
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
     }
 }

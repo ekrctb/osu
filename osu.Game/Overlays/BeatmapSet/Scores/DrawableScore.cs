@@ -3,10 +3,10 @@
 
 using OpenTK;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Online.API.Requests.Responses;
@@ -125,18 +125,18 @@ namespace osu.Game.Overlays.BeatmapSet.Scores
             background.Colour = colours.Gray4;
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             background.FadeIn(fade_duration, Easing.OutQuint);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             background.FadeOut(fade_duration, Easing.OutQuint);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
-        protected override bool OnClick(InputState state) => true;
+        protected override bool OnClick(ClickEventArgs args) => true;
     }
 }

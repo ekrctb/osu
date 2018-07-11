@@ -5,11 +5,11 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Framework.Platform;
 
 namespace osu.Game.Graphics.UserInterface
@@ -42,23 +42,23 @@ namespace osu.Game.Graphics.UserInterface
             this.host = host;
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (args.Key == Key.CapsLock)
                 updateCapsWarning(host.CapsLockEnabled);
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
-        protected override void OnFocus(InputState state)
+        protected override void OnFocus(FocusEventArgs args)
         {
             updateCapsWarning(host.CapsLockEnabled);
-            base.OnFocus(state);
+            base.OnFocus(args);
         }
 
-        protected override void OnFocusLost(InputState state)
+        protected override void OnFocusLost(FocusLostEventArgs args)
         {
             updateCapsWarning(false);
-            base.OnFocusLost(state);
+            base.OnFocusLost(args);
         }
 
         private void updateCapsWarning(bool visible) => warning.FadeTo(visible ? 1 : 0, 250, Easing.OutQuint);

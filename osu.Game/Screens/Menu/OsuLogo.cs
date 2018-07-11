@@ -6,12 +6,12 @@ using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
 using osu.Framework.Audio.Track;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Input;
 using osu.Framework.MathUtils;
 using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Graphics;
@@ -343,19 +343,19 @@ namespace osu.Game.Screens.Menu
 
         public override bool HandleMouseInput => base.HandleMouseInput && Action != null && Alpha > 0.2f;
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             logoBounceContainer.ScaleTo(0.9f, 1000, Easing.Out);
             return true;
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             logoBounceContainer.ScaleTo(1f, 500, Easing.OutElastic);
             return true;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             if (Action?.Invoke() ?? true)
                 sampleClick.Play();
@@ -366,13 +366,13 @@ namespace osu.Game.Screens.Menu
             return true;
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             logoHoverContainer.ScaleTo(1.1f, 500, Easing.OutElastic);
             return true;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             logoHoverContainer.ScaleTo(1, 500, Easing.OutElastic);
         }

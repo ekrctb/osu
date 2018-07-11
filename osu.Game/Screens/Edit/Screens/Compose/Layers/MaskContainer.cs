@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input;
@@ -32,7 +33,7 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
         /// <summary>
         /// Invoked when any <see cref="HitObjectMask"/> requests drag.
         /// </summary>
-        public event Action<HitObjectMask, InputState> MaskDragRequested;
+        public event Action<HitObjectMask, DragEventArgs> MaskDragRequested;
 
         private IEnumerable<HitObjectMask> aliveMasks => AliveInternalChildren.Cast<HitObjectMask>();
 
@@ -103,7 +104,7 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
         }
 
         private void onSelectionRequested(HitObjectMask mask, InputState state) => MaskSelectionRequested?.Invoke(mask, state);
-        private void onDragRequested(HitObjectMask mask, InputState state) => MaskDragRequested?.Invoke(mask, state);
+        private void onDragRequested(HitObjectMask mask, DragEventArgs args) => MaskDragRequested?.Invoke(mask, args);
 
         protected override int Compare(Drawable x, Drawable y)
         {

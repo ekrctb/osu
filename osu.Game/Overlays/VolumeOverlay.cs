@@ -4,12 +4,12 @@
 using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Framework.Threading;
 using osu.Game.Graphics;
 using osu.Game.Input.Bindings;
@@ -143,23 +143,23 @@ namespace osu.Game.Overlays
             this.FadeOut(100);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
             // keep the scheduled event correctly timed as long as we have movement.
             schedulePopOut();
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             schedulePopOut();
             return true;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             schedulePopOut();
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         private void schedulePopOut()

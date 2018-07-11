@@ -2,8 +2,8 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using System;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using OpenTK;
@@ -48,16 +48,16 @@ namespace osu.Game.Screens.Select.Leaderboards
                 };
             }
 
-            protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+            protected override bool OnMouseDown(MouseDownEventArgs args)
             {
                 icon.ScaleTo(0.8f, 4000, Easing.OutQuint);
-                return base.OnMouseDown(state, args);
+                return base.OnMouseDown(args);
             }
 
-            protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+            protected override bool OnMouseUp(MouseUpEventArgs args)
             {
                 icon.ScaleTo(1, 1000, Easing.OutElastic);
-                return base.OnMouseUp(state, args);
+                return base.OnMouseUp(args);
             }
         }
     }

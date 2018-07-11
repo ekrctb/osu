@@ -4,11 +4,11 @@
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.Sprites;
@@ -70,7 +70,7 @@ namespace osu.Game.Overlays.Profile.Sections.Kudosu
             };
         }
 
-        protected override bool OnClick(InputState state) => true;
+        protected override bool OnClick(ClickEventArgs args) => true;
 
         private class CountSection : Container
         {

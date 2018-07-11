@@ -4,11 +4,11 @@
 using System;
 using System.Linq;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Framework.MathUtils;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
@@ -61,10 +61,10 @@ namespace osu.Game.Screens.Play.HUD
 
         private float positionalAdjust;
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
-            positionalAdjust = Vector2.Distance(state.Mouse.NativeState.Position, button.ScreenSpaceDrawQuad.Centre) / 200;
-            return base.OnMouseMove(state);
+            positionalAdjust = Vector2.Distance(args.ScreenMousePosition, button.ScreenSpaceDrawQuad.Centre) / 200;
+            return base.OnMouseMove(args);
         }
 
         protected override void Update()
@@ -169,28 +169,28 @@ namespace osu.Game.Screens.Play.HUD
                              });
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 HoverGained?.Invoke();
                 return true;
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 HoverLost?.Invoke();
-                base.OnHoverLost(state);
+                base.OnHoverLost(args);
             }
 
-            protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+            protected override bool OnMouseDown(MouseDownEventArgs args)
             {
-                if (!pendingAnimation && state.Mouse.Buttons.Count() == 1)
+                if (!pendingAnimation && args.State.Mouse.Buttons.Count() == 1)
                     BeginConfirm();
                 return true;
             }
 
-            protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+            protected override bool OnMouseUp(MouseUpEventArgs args)
             {
-                if (!state.Mouse.Buttons.Any())
+                if (!args.State.Mouse.Buttons.Any())
                     AbortConfirm();
                 return true;
             }

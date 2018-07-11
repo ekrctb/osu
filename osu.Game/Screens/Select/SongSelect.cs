@@ -9,9 +9,9 @@ using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
 using osu.Framework.Audio.Track;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Framework.Screens;
 using osu.Framework.Threading;
 using osu.Game.Beatmaps;
@@ -510,14 +510,14 @@ namespace osu.Game.Screens.Select
             return base.OnPressed(action);
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (args.Repeat) return false;
 
             switch (args.Key)
             {
                 case Key.Delete:
-                    if (state.Keyboard.ShiftPressed)
+                    if (args.State.Keyboard.ShiftPressed)
                     {
                         if (!Beatmap.IsDefault)
                             delete(Beatmap.Value.BeatmapSetInfo);
@@ -527,7 +527,7 @@ namespace osu.Game.Screens.Select
                     break;
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
         private class ResetScrollContainer : Container
@@ -539,10 +539,10 @@ namespace osu.Game.Screens.Select
                 this.onHoverAction = onHoverAction;
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 onHoverAction?.Invoke();
-                return base.OnHover(state);
+                return base.OnHover(args);
             }
         }
     }

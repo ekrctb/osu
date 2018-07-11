@@ -2,12 +2,12 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using NUnit.Framework;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Framework.MathUtils;
 using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.Sprites;
@@ -184,7 +184,7 @@ namespace osu.Game.Tests.Visual
         /// </summary>
         /// <param name="cursorContainer">The cursor to check.</param>
         private bool checkAtMouse(CursorContainer cursorContainer)
-            => Precision.AlmostEquals(InputManager.CurrentState.Mouse.NativeState.Position, cursorContainer.ToScreenSpace(cursorContainer.ActiveCursor.DrawPosition));
+            => Precision.AlmostEquals(InputManager.CurrentState.Mouse.Position, cursorContainer.ToScreenSpace(cursorContainer.ActiveCursor.DrawPosition));
 
         private class CustomCursorBox : Container, IProvideCursor
         {
@@ -224,16 +224,16 @@ namespace osu.Game.Tests.Visual
                 };
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 background.FadeTo(0.4f, 250, Easing.OutQuint);
                 return false;
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 background.FadeTo(0.1f, 250);
-                base.OnHoverLost(state);
+                base.OnHoverLost(args);
             }
         }
 

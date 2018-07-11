@@ -5,8 +5,8 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 using osu.Framework.Screens;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
@@ -180,15 +180,16 @@ namespace osu.Game.Screens.Menu
             return base.OnExiting(next);
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
-            if (!args.Repeat && state.Keyboard.ControlPressed && state.Keyboard.ShiftPressed && args.Key == Key.D)
+            var keyboard = args.State.Keyboard;
+            if (!args.Repeat && keyboard.ControlPressed && keyboard.ShiftPressed && args.Key == Key.D)
             {
                 Push(new Drawings());
                 return true;
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
     }
 }

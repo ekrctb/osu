@@ -2,11 +2,11 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Users;
-using osu.Framework.Input;
 
 namespace osu.Game.Overlays.BeatmapSet.Scores
 {
@@ -53,7 +53,7 @@ namespace osu.Game.Overlays.BeatmapSet.Scores
             this.profile = profile;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             profile?.ShowUser(user);
             return true;

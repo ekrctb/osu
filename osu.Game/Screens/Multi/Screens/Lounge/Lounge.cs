@@ -3,10 +3,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Framework.Screens;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online.Multiplayer;
@@ -112,7 +112,7 @@ namespace osu.Game.Screens.Multi.Screens.Lounge
             };
         }
 
-        protected override void OnFocus(InputState state)
+        protected override void OnFocus(FocusEventArgs args)
         {
             GetContainingInputManager().ChangeFocus(Filter.Search);
         }

@@ -4,13 +4,13 @@
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Game.Graphics.Sprites;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 
 namespace osu.Game.Graphics.UserInterface
 {
@@ -59,18 +59,18 @@ namespace osu.Game.Graphics.UserInterface
             text.FadeColour(AccentColour, transition_length, Easing.OutQuint);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             fadeIn();
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             if (!Current)
                 fadeOut();
 
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         [BackgroundDependencyLoader]

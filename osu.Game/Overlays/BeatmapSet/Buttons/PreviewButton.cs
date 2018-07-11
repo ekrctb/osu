@@ -3,11 +3,11 @@
 
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Audio;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
@@ -89,16 +89,16 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
                 progress.Width = 0;
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             bg.FadeColour(Color4.Black.Opacity(0.5f), 100);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             bg.FadeColour(Color4.Black.Opacity(0.25f), 100);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
     }
 }

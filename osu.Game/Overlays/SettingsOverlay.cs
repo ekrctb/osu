@@ -7,11 +7,11 @@ using System.Linq;
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Overlays.Settings;
@@ -177,10 +177,10 @@ namespace osu.Game.Overlays
 
         public override bool AcceptsFocus => true;
 
-        protected override void OnFocus(InputState state)
+        protected override void OnFocus(FocusEventArgs args)
         {
             GetContainingInputManager().ChangeFocus(searchTextBox);
-            base.OnFocus(state);
+            base.OnFocus(args);
         }
 
         protected override void UpdateAfterChildren()

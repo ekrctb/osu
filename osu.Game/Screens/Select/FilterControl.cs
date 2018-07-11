@@ -6,6 +6,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.UserInterface;
@@ -13,7 +14,6 @@ using osu.Game.Graphics;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Screens.Select.Filter;
 using Container = osu.Framework.Graphics.Containers.Container;
-using osu.Framework.Input;
 using osu.Framework.Graphics.Shapes;
 using osu.Game.Configuration;
 using osu.Game.Rulesets;
@@ -186,10 +186,10 @@ namespace osu.Game.Screens.Select
 
         private void updateCriteria() => FilterChanged?.Invoke(CreateCriteria());
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args) => true;
+        protected override bool OnMouseDown(MouseDownEventArgs args) => true;
 
-        protected override bool OnMouseMove(InputState state) => true;
+        protected override bool OnMouseMove(MouseMoveEventArgs args) => true;
 
-        protected override bool OnClick(InputState state) => true;
+        protected override bool OnClick(ClickEventArgs args) => true;
     }
 }

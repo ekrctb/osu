@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using osu.Framework.EventArgs;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
@@ -11,7 +12,6 @@ using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics.UserInterface;
 
 namespace osu.Game.Screens.Select
@@ -138,8 +138,8 @@ namespace osu.Game.Screens.Select
             updateModeLight();
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args) => true;
+        protected override bool OnMouseDown(MouseDownEventArgs args) => true;
 
-        protected override bool OnClick(InputState state) => true;
+        protected override bool OnClick(ClickEventArgs args) => true;
     }
 }

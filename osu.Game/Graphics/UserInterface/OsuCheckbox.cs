@@ -5,10 +5,10 @@ using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using OpenTK.Graphics;
 
@@ -95,18 +95,18 @@ namespace osu.Game.Graphics.UserInterface
             };
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             Nub.Glowing = true;
             Nub.Expanded = true;
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             Nub.Glowing = false;
             Nub.Expanded = false;
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         [BackgroundDependencyLoader]

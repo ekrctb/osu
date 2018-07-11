@@ -4,11 +4,11 @@
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics.Containers;
 
 namespace osu.Game.Graphics.UserInterface
@@ -145,36 +145,36 @@ namespace osu.Game.Graphics.UserInterface
             Enabled.ValueChanged += enabled => this.FadeColour(enabled ? Color4.White : colours.Gray9, 200, Easing.OutQuint);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             hover.FadeIn(500, Easing.OutQuint);
             icon.FadeColour(IconHoverColour, 500, Easing.OutQuint);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             hover.FadeOut(500, Easing.OutQuint);
             icon.FadeColour(IconColour, 500, Easing.OutQuint);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             hover.FlashColour(FlashColour, 800, Easing.OutQuint);
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             content.ScaleTo(0.75f, 2000, Easing.OutQuint);
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             content.ScaleTo(1, 1000, Easing.OutElastic);
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
     }
 }

@@ -3,6 +3,7 @@
 
 using System;
 using osu.Framework;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Input;
@@ -36,7 +37,7 @@ namespace osu.Game.Rulesets.Edit
         /// <summary>
         /// Invoked when this <see cref="HitObjectMask"/> has requested drag.
         /// </summary>
-        public event Action<HitObjectMask, InputState> DragRequested;
+        public event Action<HitObjectMask, DragEventArgs> DragRequested;
 
         /// <summary>
         /// The <see cref="DrawableHitObject"/> which this <see cref="HitObjectMask"/> applies to.
@@ -95,36 +96,36 @@ namespace osu.Game.Rulesets.Edit
 
         private bool selectionRequested;
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             selectionRequested = false;
 
             if (State == SelectionState.NotSelected)
             {
-                SelectionRequested?.Invoke(this, state);
+                SelectionRequested?.Invoke(this, args.State);
                 selectionRequested = true;
             }
 
             return IsSelected;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             if (State == SelectionState.Selected && !selectionRequested)
             {
                 selectionRequested = true;
-                SelectionRequested?.Invoke(this, state);
+                SelectionRequested?.Invoke(this, args.State);
                 return true;
             }
 
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
-        protected override bool OnDragStart(InputState state) => true;
+        protected override bool OnDragStart(DragStartEventArgs args) => true;
 
-        protected override bool OnDrag(InputState state)
+        protected override bool OnDrag(DragEventArgs args)
         {
-            DragRequested?.Invoke(this, state);
+            DragRequested?.Invoke(this, args);
             return true;
         }
 

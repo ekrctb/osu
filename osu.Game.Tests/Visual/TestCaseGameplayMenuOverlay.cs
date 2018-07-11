@@ -8,7 +8,6 @@ using System.Linq;
 using OpenTK.Input;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Framework.Logging;
 using osu.Game.Screens.Play;
 
@@ -86,7 +85,7 @@ namespace osu.Game.Tests.Visual
         {
             AddStep("Show overlay", () => pauseOverlay.Show());
 
-            AddStep("Press enter", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Enter }));
+            AddStep("Press enter", () => pauseOverlay.TriggerOnKeyDown(null, Key.Enter));
             AddAssert("Overlay still open", () => pauseOverlay.State == Visibility.Visible);
 
             AddStep("Hide overlay", () => pauseOverlay.Hide());
@@ -99,7 +98,7 @@ namespace osu.Game.Tests.Visual
         {
             AddStep("Show overlay", () => pauseOverlay.Show());
 
-            AddStep("Up arrow", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Up }));
+            AddStep("Up arrow", () => pauseOverlay.TriggerOnKeyDown(null, Key.Up));
             AddAssert("Last button selected", () => pauseOverlay.Buttons.Last().Selected);
 
             AddStep("Hide overlay", () => pauseOverlay.Hide());
@@ -112,7 +111,7 @@ namespace osu.Game.Tests.Visual
         {
             AddStep("Show overlay", () => pauseOverlay.Show());
 
-            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, Key.Down));
             AddAssert("First button selected", () => pauseOverlay.Buttons.First().Selected);
 
             AddStep("Hide overlay", () => pauseOverlay.Hide());
@@ -125,11 +124,11 @@ namespace osu.Game.Tests.Visual
         {
             AddStep("Show overlay", () => failOverlay.Show());
 
-            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Up }));
+            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Up));
             AddAssert("Last button selected", () => failOverlay.Buttons.Last().Selected);
-            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Up }));
+            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Up));
             AddAssert("First button selected", () => failOverlay.Buttons.First().Selected);
-            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Up }));
+            AddStep("Up arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Up));
             AddAssert("Last button selected", () => failOverlay.Buttons.Last().Selected);
 
             AddStep("Hide overlay", () => failOverlay.Hide());
@@ -142,11 +141,11 @@ namespace osu.Game.Tests.Visual
         {
             AddStep("Show overlay", () => failOverlay.Show());
 
-            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Down));
             AddAssert("First button selected", () => failOverlay.Buttons.First().Selected);
-            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Down));
             AddAssert("Last button selected", () => failOverlay.Buttons.Last().Selected);
-            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => failOverlay.TriggerOnKeyDown(null, Key.Down));
             AddAssert("First button selected", () => failOverlay.Buttons.First().Selected);
 
             AddStep("Hide overlay", () => failOverlay.Hide());
@@ -161,7 +160,7 @@ namespace osu.Game.Tests.Visual
 
             var secondButton = pauseOverlay.Buttons.Skip(1).First();
 
-            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, Key.Down));
             AddStep("Hover second button", () => secondButton.TriggerOnMouseMove(null));
             AddAssert("First button not selected", () => !pauseOverlay.Buttons.First().Selected);
             AddAssert("Second button selected", () => secondButton.Selected);
@@ -179,7 +178,7 @@ namespace osu.Game.Tests.Visual
             var secondButton = pauseOverlay.Buttons.Skip(1).First();
 
             AddStep("Hover second button", () => secondButton.TriggerOnMouseMove(null));
-            AddStep("Up arrow", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Up }));
+            AddStep("Up arrow", () => pauseOverlay.TriggerOnKeyDown(null, Key.Up));
             AddAssert("Second button not selected", () => !secondButton.Selected);
             AddAssert("First button selected", () => pauseOverlay.Buttons.First().Selected);
 
@@ -197,7 +196,7 @@ namespace osu.Game.Tests.Visual
 
             AddStep("Hover second button", () => secondButton.TriggerOnMouseMove(null));
             AddStep("Unhover second button", () => secondButton.TriggerOnHoverLost(null));
-            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down }));
+            AddStep("Down arrow", () => pauseOverlay.TriggerOnKeyDown(null, Key.Down));
             AddAssert("First button selected", () => pauseOverlay.Buttons.First().Selected); // Initial state condition
 
             AddStep("Hide overlay", () => pauseOverlay.Hide());
@@ -235,8 +234,8 @@ namespace osu.Game.Tests.Visual
 
             AddStep("Select second button", () =>
             {
-                pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down });
-                pauseOverlay.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Down });
+                pauseOverlay.TriggerOnKeyDown(null, Key.Down);
+                pauseOverlay.TriggerOnKeyDown(null, Key.Down);
             });
 
             var retryButton = pauseOverlay.Buttons.Skip(1).First();
@@ -247,7 +246,7 @@ namespace osu.Game.Tests.Visual
                 var lastAction = pauseOverlay.OnRetry;
                 pauseOverlay.OnRetry = () => triggered = true;
 
-                retryButton.TriggerOnKeyDown(null, new KeyDownEventArgs { Key = Key.Enter });
+                retryButton.TriggerOnKeyDown(null, Key.Enter);
                 pauseOverlay.OnRetry = lastAction;
             });
 

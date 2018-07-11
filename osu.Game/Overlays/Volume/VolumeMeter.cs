@@ -5,13 +5,13 @@ using System;
 using System.Globalization;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Framework.MathUtils;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
@@ -239,21 +239,21 @@ namespace osu.Game.Overlays.Volume
             adjustAccumulator = 0;
         }
 
-        protected override bool OnScroll(InputState state)
+        protected override bool OnScroll(ScrollEventArgs args)
         {
-            adjust(state.Mouse.ScrollDelta.Y, state.Mouse.HasPreciseScroll);
+            adjust(args.ScrollDelta.Y, args.IsPrecise);
             return true;
         }
 
         private const float transition_length = 500;
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             this.ScaleTo(1.04f, transition_length, Easing.OutExpo);
             return false;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             this.ScaleTo(1f, transition_length, Easing.OutExpo);
         }

@@ -13,7 +13,7 @@ using osu.Game.Graphics.Sprites;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Game.Graphics.Containers;
 using osu.Framework.Configuration;
-using osu.Framework.Input;
+using osu.Framework.EventArgs;
 
 namespace osu.Game.Graphics.UserInterface
 {
@@ -213,7 +213,7 @@ namespace osu.Game.Graphics.UserInterface
 
         public override bool ReceiveMouseInputAt(Vector2 screenSpacePos) => backgroundContainer.ReceiveMouseInputAt(screenSpacePos);
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             colourContainer.ResizeTo(new Vector2(1.5f, 1f), click_duration, Easing.In);
             flash();
@@ -225,20 +225,20 @@ namespace osu.Game.Graphics.UserInterface
                 glowContainer.FadeOut();
             });
 
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
-            base.OnHover(state);
+            base.OnHover(args);
 
             Selected.Value = true;
             return true;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
             Selected.Value = false;
         }
 

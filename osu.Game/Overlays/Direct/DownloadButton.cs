@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Drawables;
 using osu.Game.Graphics;
@@ -50,25 +50,25 @@ namespace osu.Game.Overlays.Direct
             };
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             icon.ScaleTo(0.9f, 1000, Easing.Out);
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             icon.ScaleTo(1f, 500, Easing.OutElastic);
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             icon.ScaleTo(1.1f, 500, Easing.OutElastic);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             icon.ScaleTo(1f, 500, Easing.OutElastic);
         }

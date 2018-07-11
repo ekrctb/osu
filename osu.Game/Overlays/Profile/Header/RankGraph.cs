@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
@@ -137,25 +137,25 @@ namespace osu.Game.Overlays.Profile.Header
             relativeText.Text = dayIndex + 1 == ranks.Length ? "Now" : $"{ranked_days - ranks[dayIndex].Key} days ago";
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             if (ranks?.Length > 1)
             {
-                graph.UpdateBallPosition(state.Mouse.Position.X);
+                graph.UpdateBallPosition(args.MousePosition.X);
                 graph.ShowBall();
             }
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
             if (ranks?.Length > 1)
-                graph.UpdateBallPosition(state.Mouse.Position.X);
+                graph.UpdateBallPosition(args.MousePosition.X);
 
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             if (ranks?.Length > 1)
             {
@@ -163,7 +163,7 @@ namespace osu.Game.Overlays.Profile.Header
                 updateRankTexts();
             }
 
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         private class RankChartLineGraph : LineGraph

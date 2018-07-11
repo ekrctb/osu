@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input;
 using OpenTK.Input;
@@ -28,40 +29,40 @@ namespace osu.Game.Graphics.Containers
 
         protected override bool IsDragging => base.IsDragging || mouseScrollBarDragging;
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
-            if (shouldPerformRightMouseScroll(state))
+            if (shouldPerformRightMouseScroll(args.State))
             {
-                scrollToRelative(state.Mouse.Position[ScrollDim]);
+                scrollToRelative(args.MousePosition[ScrollDim]);
                 return true;
             }
 
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnDrag(InputState state)
+        protected override bool OnDrag(DragEventArgs args)
         {
             if (mouseScrollBarDragging)
             {
-                scrollToRelative(state.Mouse.Position[ScrollDim]);
+                scrollToRelative(args.MousePosition[ScrollDim]);
                 return true;
             }
 
-            return base.OnDrag(state);
+            return base.OnDrag(args);
         }
 
-        protected override bool OnDragStart(InputState state)
+        protected override bool OnDragStart(DragStartEventArgs args)
         {
-            if (shouldPerformRightMouseScroll(state))
+            if (shouldPerformRightMouseScroll(args.State))
             {
                 mouseScrollBarDragging = true;
                 return true;
             }
 
-            return base.OnDragStart(state);
+            return base.OnDragStart(args);
         }
 
-        protected override bool OnDragEnd(InputState state)
+        protected override bool OnDragEnd(DragEndEventArgs args)
         {
             if (mouseScrollBarDragging)
             {
@@ -69,7 +70,7 @@ namespace osu.Game.Graphics.Containers
                 return true;
             }
 
-            return base.OnDragEnd(state);
+            return base.OnDragEnd(args);
         }
     }
 }

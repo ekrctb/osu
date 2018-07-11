@@ -4,10 +4,10 @@
 using osu.Framework.Allocation;
 using osu.Framework.Audio.Track;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Audio;
-using osu.Framework.Input;
 using osu.Framework.Timing;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
@@ -132,9 +132,9 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Timeline
             ScrollTo((float)(adjustableClock.CurrentTime / track.Length) * Content.DrawWidth, false);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
-            if (base.OnMouseDown(state, args))
+            if (base.OnMouseDown(args))
             {
                 beginUserDrag();
                 return true;
@@ -143,10 +143,10 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Timeline
             return false;
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             endUserDrag();
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         private void beginUserDrag()

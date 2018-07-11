@@ -7,6 +7,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
@@ -14,7 +15,6 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Framework.MathUtils;
 using osu.Game.Graphics.Sprites;
 
@@ -126,14 +126,14 @@ namespace osu.Game.Graphics.UserInterface
                 Text.FadeColour(AccentColour, transition_length, Easing.OutQuint);
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 if (!Active)
                     fadeActive();
                 return true;
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 if (!Active)
                     fadeInactive();
@@ -265,16 +265,16 @@ namespace osu.Game.Graphics.UserInterface
                     Padding = new MarginPadding { Left = 5, Right = 5 };
                 }
 
-                protected override bool OnHover(InputState state)
+                protected override bool OnHover(HoverEventArgs args)
                 {
                     Foreground.Colour = BackgroundColour;
-                    return base.OnHover(state);
+                    return base.OnHover(args);
                 }
 
-                protected override void OnHoverLost(InputState state)
+                protected override void OnHoverLost(HoverLostEventArgs args)
                 {
                     Foreground.Colour = BackgroundColourHover;
-                    base.OnHoverLost(state);
+                    base.OnHoverLost(args);
                 }
             }
         }

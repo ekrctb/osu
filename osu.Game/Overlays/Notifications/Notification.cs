@@ -3,11 +3,11 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using OpenTK;
 using OpenTK.Graphics;
@@ -113,19 +113,19 @@ namespace osu.Game.Overlays.Notifications
             });
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             closeButton.FadeIn(75);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             closeButton.FadeOut(75);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             if (Activated?.Invoke() ?? true)
                 Close();
@@ -180,16 +180,16 @@ namespace osu.Game.Overlays.Notifications
                 hoverColour = colours.Yellow;
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 this.FadeColour(hoverColour, 200);
-                return base.OnHover(state);
+                return base.OnHover(args);
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 this.FadeColour(OsuColour.Gray(0.2f), 200);
-                base.OnHoverLost(state);
+                base.OnHoverLost(args);
             }
         }
 

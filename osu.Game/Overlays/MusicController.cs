@@ -7,13 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Input;
 using osu.Framework.Localisation;
 using osu.Framework.Threading;
 using osu.Game.Beatmaps;
@@ -447,18 +447,18 @@ namespace osu.Game.Overlays
         {
             private Vector2 dragStart;
 
-            protected override bool OnDragStart(InputState state)
+            protected override bool OnDragStart(DragStartEventArgs args)
             {
-                base.OnDragStart(state);
-                dragStart = state.Mouse.Position;
+                base.OnDragStart(args);
+                dragStart = args.MousePosition;
                 return true;
             }
 
-            protected override bool OnDrag(InputState state)
+            protected override bool OnDrag(DragEventArgs args)
             {
-                if (base.OnDrag(state)) return true;
+                if (base.OnDrag(args)) return true;
 
-                Vector2 change = state.Mouse.Position - dragStart;
+                Vector2 change = args.MousePosition - dragStart;
 
                 // Diminish the drag distance as we go further to simulate "rubber band" feeling.
                 change *= change.Length <= 0 ? 0 : (float)Math.Pow(change.Length, 0.7f) / change.Length;
@@ -467,10 +467,10 @@ namespace osu.Game.Overlays
                 return true;
             }
 
-            protected override bool OnDragEnd(InputState state)
+            protected override bool OnDragEnd(DragEndEventArgs args)
             {
                 this.MoveTo(Vector2.Zero, 800, Easing.OutElastic);
-                return base.OnDragEnd(state);
+                return base.OnDragEnd(args);
             }
         }
     }

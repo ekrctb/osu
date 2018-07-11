@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Game.Configuration;
-using osu.Framework.Input;
 using OpenTK.Input;
 using osu.Framework.MathUtils;
 using System.Diagnostics;
@@ -17,6 +16,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Caching;
 using osu.Framework.Threading;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
@@ -376,7 +376,7 @@ namespace osu.Game.Screens.Select
 
         public void ScrollToSelected() => scrollPositionCache.Invalidate();
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             int direction = 0;
             bool skipDifficulties = false;
@@ -400,7 +400,7 @@ namespace osu.Game.Screens.Select
             }
 
             if (direction == 0)
-                return base.OnKeyDown(state, args);
+                return base.OnKeyDown(args);
 
             SelectNext(direction, skipDifficulties);
             return true;

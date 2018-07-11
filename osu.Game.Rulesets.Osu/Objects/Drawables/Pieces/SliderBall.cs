@@ -2,10 +2,10 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using System.Linq;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Rulesets.Objects.Types;
 using OpenTK;
 using OpenTK.Graphics;
@@ -79,24 +79,23 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Pieces
             };
         }
 
-        private InputState lastState;
-
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        private Vector2? lastScreenMousePosition;
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
-            lastState = state;
-            return base.OnMouseDown(state, args);
+            lastScreenMousePosition = args.ScreenMousePosition;
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
-            lastState = state;
-            return base.OnMouseUp(state, args);
+            lastScreenMousePosition = args.ScreenMousePosition;
+            return base.OnMouseUp(args);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
-            lastState = state;
-            return base.OnMouseMove(state);
+            lastScreenMousePosition = args.ScreenLastMousePosition;
+            return base.OnMouseMove(args);
         }
 
         // If the current time is between the start and end of the slider, we should track mouse input regardless of the cursor position.
@@ -134,8 +133,8 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Pieces
             {
                 // Make sure to use the base version of ReceiveMouseInputAt so that we correctly check the position.
                 Tracking = canCurrentlyTrack
-                           && lastState != null
-                           && base.ReceiveMouseInputAt(lastState.Mouse.NativeState.Position)
+                           && lastScreenMousePosition != null
+                           && base.ReceiveMouseInputAt(lastScreenMousePosition.Value)
                            && ((Parent as DrawableSlider)?.OsuActionInputManager?.PressedActions.Any(x => x == OsuAction.LeftButton || x == OsuAction.RightButton) ?? false);
             }
         }

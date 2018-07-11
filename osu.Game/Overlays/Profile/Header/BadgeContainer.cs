@@ -3,13 +3,13 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Users;
@@ -153,13 +153,13 @@ namespace osu.Game.Overlays.Profile.Header
                 this.hoverLostAction = hoverLostAction;
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 hoverAction();
                 return true;
             }
 
-            protected override void OnHoverLost(InputState state) => hoverLostAction();
+            protected override void OnHoverLost(HoverLostEventArgs args) => hoverLostAction();
         }
 
         private class DrawableBadge : Container, IHasTooltip

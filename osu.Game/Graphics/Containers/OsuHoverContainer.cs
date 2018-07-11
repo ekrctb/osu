@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 
 namespace osu.Game.Graphics.Containers
 {
@@ -18,16 +18,16 @@ namespace osu.Game.Graphics.Containers
 
         protected virtual IEnumerable<Drawable> EffectTargets => new[] { Content };
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             EffectTargets.ForEach(d => d.FadeColour(HoverColour, 500, Easing.OutQuint));
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             EffectTargets.ForEach(d => d.FadeColour(IdleColour, 500, Easing.OutQuint));
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         [BackgroundDependencyLoader]

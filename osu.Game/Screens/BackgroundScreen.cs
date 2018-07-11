@@ -3,9 +3,9 @@
 
 using System;
 using System.Threading;
+using osu.Framework.EventArgs;
 using osu.Framework.Screens;
 using osu.Framework.Graphics;
-using osu.Framework.Input;
 using OpenTK;
 
 namespace osu.Game.Screens
@@ -20,7 +20,7 @@ namespace osu.Game.Screens
         private const float transition_length = 500;
         private const float x_movement_amount = 50;
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             //we don't want to handle escape key.
             return false;

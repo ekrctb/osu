@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -54,7 +55,7 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
 
         #region User Input Handling
 
-        public void HandleDrag(HitObjectMask m, InputState state)
+        public void HandleDrag(HitObjectMask m, DragEventArgs args)
         {
             // Todo: Various forms of snapping
 
@@ -63,7 +64,7 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
                 switch (mask.HitObject.HitObject)
                 {
                     case IHasEditablePosition editablePosition:
-                        editablePosition.OffsetPosition(state.Mouse.Delta);
+                        editablePosition.OffsetPosition(args.Delta);
                         break;
                 }
             }

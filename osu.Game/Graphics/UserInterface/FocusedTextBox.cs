@@ -2,8 +2,8 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using OpenTK.Graphics;
-using osu.Framework.Input;
 using System;
+using osu.Framework.EventArgs;
 using osu.Game.Input.Bindings;
 using OpenTK.Input;
 
@@ -35,20 +35,20 @@ namespace osu.Game.Graphics.UserInterface
         // We may not be focused yet, but we need to handle keyboard input to be able to request focus
         public override bool HandleKeyboardInput => HoldFocus || base.HandleKeyboardInput;
 
-        protected override void OnFocus(InputState state)
+        protected override void OnFocus(FocusEventArgs args)
         {
-            base.OnFocus(state);
+            base.OnFocus(args);
             BorderThickness = 0;
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (!HasFocus) return false;
 
             if (args.Key == Key.Escape)
                 return false; // disable the framework-level handling of escape key for confority (we use GlobalAction.Back).
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
         public override bool OnPressed(GlobalAction action)

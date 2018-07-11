@@ -5,7 +5,6 @@ using System;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using OpenTK;
 using OpenTK.Graphics;
@@ -16,8 +15,10 @@ using osu.Framework.Graphics.Shapes;
 using OpenTK.Input;
 using System.Collections.Generic;
 using System.Linq;
+using osu.Framework.EventArgs;
 using osu.Framework.Input.Bindings;
 using osu.Game.Input.Bindings;
+using MouseMoveEventArgs = osu.Framework.EventArgs.MouseMoveEventArgs;
 
 namespace osu.Game.Screens.Play
 {
@@ -154,11 +155,11 @@ namespace osu.Game.Screens.Play
         protected override void PopOut() => this.FadeOut(transition_duration, Easing.In);
 
         // Don't let mouse down events through the overlay or people can click circles while paused.
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args) => true;
+        protected override bool OnMouseDown(MouseDownEventArgs args) => true;
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args) => true;
+        protected override bool OnMouseUp(MouseUpEventArgs args) => true;
 
-        protected override bool OnMouseMove(InputState state) => true;
+        protected override bool OnMouseMove(MouseMoveEventArgs args) => true;
 
         protected void AddButton(string text, Color4 colour, Action action)
         {
@@ -203,7 +204,7 @@ namespace osu.Game.Screens.Play
             }
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (!args.Repeat)
             {
@@ -224,7 +225,7 @@ namespace osu.Game.Screens.Play
                 }
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
         public bool OnPressed(GlobalAction action)
@@ -282,20 +283,20 @@ namespace osu.Game.Screens.Play
 
         private class Button : DialogButton
         {
-            protected override bool OnHover(InputState state) => true;
+            protected override bool OnHover(HoverEventArgs args) => true;
 
-            protected override bool OnMouseMove(InputState state)
+            protected override bool OnMouseMove(MouseMoveEventArgs args)
             {
                 Selected.Value = true;
-                return base.OnMouseMove(state);
+                return base.OnMouseMove(args);
             }
 
-            protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+            protected override bool OnKeyDown(KeyDownEventArgs args)
             {
                 if (args.Repeat || args.Key != Key.Enter || !Selected)
                     return false;
 
-                OnClick(state);
+                TriggerOnClick(args.State);
                 return true;
             }
         }

@@ -3,9 +3,9 @@
 
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Audio;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
@@ -93,23 +93,23 @@ namespace osu.Game.Overlays.Direct
             hoverColour = colour.Yellow;
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             Playing.Toggle();
             return true;
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             icon.FadeColour(hoverColour, 120, Easing.InOutQuint);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             if (!Playing.Value)
                 icon.FadeColour(Color4.White, 120, Easing.InOutQuint);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
         private void playingStateChanged(bool playing)

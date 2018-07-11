@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
 using OpenTK;
@@ -115,25 +115,25 @@ namespace osu.Game.Overlays.Music
             private Vector2 nativeDragPosition;
             private PlaylistItem draggedItem;
 
-            protected override bool OnDragStart(InputState state)
+            protected override bool OnDragStart(DragStartEventArgs args)
             {
-                nativeDragPosition = state.Mouse.NativeState.Position;
+                nativeDragPosition = args.ScreenMousePosition;
                 draggedItem = items.FirstOrDefault(d => d.IsDraggable);
-                return draggedItem != null || base.OnDragStart(state);
+                return draggedItem != null || base.OnDragStart(args);
             }
 
-            protected override bool OnDrag(InputState state)
+            protected override bool OnDrag(DragEventArgs args)
             {
-                nativeDragPosition = state.Mouse.NativeState.Position;
+                nativeDragPosition = args.ScreenMousePosition;
                 if (draggedItem == null)
-                    return base.OnDrag(state);
+                    return base.OnDrag(args);
                 return true;
             }
 
-            protected override bool OnDragEnd(InputState state)
+            protected override bool OnDragEnd(DragEndEventArgs args)
             {
-                nativeDragPosition = state.Mouse.NativeState.Position;
-                var handled = draggedItem != null || base.OnDragEnd(state);
+                nativeDragPosition = args.ScreenMousePosition;
+                var handled = draggedItem != null || base.OnDragEnd(args);
                 draggedItem = null;
 
                 return handled;

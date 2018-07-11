@@ -4,12 +4,12 @@
 using System;
 using System.Linq;
 using osu.Framework;
+using osu.Framework.EventArgs;
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Framework.Threading;
 using osu.Game.Overlays.Toolbar;
 
@@ -55,25 +55,25 @@ namespace osu.Game.Overlays.Settings
         private ScheduledDelegate expandEvent;
         private ExpandedState state;
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             queueExpandIfHovering();
             return true;
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             expandEvent?.Cancel();
             lastHoveredButton = null;
             State = ExpandedState.Contracted;
 
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
             queueExpandIfHovering();
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
         private class SidebarScrollContainer : ScrollContainer

@@ -2,9 +2,9 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using System;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using OpenTK;
 using OpenTK.Graphics;
@@ -68,10 +68,10 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables.Pieces
             }
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
-            mousePosition = Parent.ToLocalSpace(state.Mouse.NativeState.Position);
-            return base.OnMouseMove(state);
+            mousePosition = Parent.ToLocalSpace(args.ScreenMousePosition);
+            return base.OnMouseMove(args);
         }
 
         private Vector2 mousePosition;

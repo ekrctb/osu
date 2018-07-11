@@ -4,8 +4,8 @@
 using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions;
-using osu.Framework.Input;
 
 namespace osu.Game.Graphics.UserInterface
 {
@@ -21,10 +21,10 @@ namespace osu.Game.Graphics.UserInterface
         {
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             sampleClick?.Play();
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
         [BackgroundDependencyLoader]

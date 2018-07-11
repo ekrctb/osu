@@ -3,10 +3,10 @@
 
 using System.Threading.Tasks;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Framework.Localisation;
 using osu.Framework.Screens;
 using osu.Framework.Threading;
@@ -124,16 +124,16 @@ namespace osu.Game.Screens.Play
 
         private bool weHandledMouseDown;
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             weHandledMouseDown = true;
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             weHandledMouseDown = false;
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         private ScheduledDelegate pushDebounce;

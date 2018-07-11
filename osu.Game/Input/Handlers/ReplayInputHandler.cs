@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using osu.Framework.EventArgs;
 using osu.Framework.Input;
 using osu.Framework.Input.Handlers;
 using osu.Framework.Platform;
+using osu.Game.Rulesets.UI;
 using OpenTK;
 
 namespace osu.Game.Input.Handlers
@@ -39,7 +41,25 @@ namespace osu.Game.Input.Handlers
 
             public void Apply(InputState state, IInputStateChangeHandler handler)
             {
-                handler.HandleCustomInput(state, this);
+                var rulesetInputManager = handler as RulesetInputManager<T>;
+                var rulesetInputManagerInputState = state as RulesetInputManagerInputState<T>;
+
+                if (rulesetInputManagerInputState != null)
+                    rulesetInputManagerInputState.LastReplayState = this;
+
+                rulesetInputManager?.HandleReplayState(new ReplayStateChangedArgs<T>(state, this, this));
+            }
+        }
+
+        public class ReplayStateChangedArgs<T> : InputStateChangeArgs
+            where T : struct
+        {
+            public ReplayState<T> ReplayState;
+
+            public ReplayStateChangedArgs(InputState state, IInput input, ReplayState<T> replayState)
+                : base(state, input)
+            {
+                ReplayState = replayState;
             }
         }
     }

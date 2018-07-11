@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Framework.Localisation;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
@@ -36,16 +36,16 @@ namespace osu.Game.Overlays.Music
 
         public bool IsDraggable { get; private set; }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             IsDraggable = handle.IsHovered;
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             IsDraggable = false;
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         private bool selected;
@@ -123,19 +123,19 @@ namespace osu.Game.Overlays.Music
             });
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             handle.FadeIn(fade_duration);
 
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             handle.FadeOut(fade_duration);
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             OnSelect?.Invoke(BeatmapSetInfo);
             return true;

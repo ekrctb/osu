@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using OpenTK;
-using osu.Framework.Input;
 using osu.Game.Screens.Play.PlayerSettings;
 using OpenTK.Input;
 
@@ -52,11 +52,11 @@ namespace osu.Game.Screens.Play.HUD
         //We want to handle keyboard inputs all the time in order to trigger ToggleVisibility() when not visible
         public override bool HandleKeyboardInput => true;
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             if (args.Repeat) return false;
 
-            if (state.Keyboard.ControlPressed)
+            if (args.State.Keyboard.ControlPressed)
             {
                 if (args.Key == Key.H && ReplayLoaded)
                 {
@@ -65,7 +65,7 @@ namespace osu.Game.Screens.Play.HUD
                 }
             }
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
     }
 }

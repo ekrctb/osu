@@ -2,10 +2,10 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using OpenTK.Graphics;
 using osu.Framework.Extensions.Color4Extensions;
@@ -44,17 +44,17 @@ namespace osu.Game.Graphics.UserInterface
             BorderColour = colour.Yellow;
         }
 
-        protected override void OnFocus(InputState state)
+        protected override void OnFocus(FocusEventArgs args)
         {
             BorderThickness = 3;
-            base.OnFocus(state);
+            base.OnFocus(args);
         }
 
-        protected override void OnFocusLost(InputState state)
+        protected override void OnFocusLost(FocusLostEventArgs args)
         {
             BorderThickness = 0;
 
-            base.OnFocusLost(state);
+            base.OnFocusLost(args);
         }
 
         protected override Drawable GetDrawableCharacter(char c) => new OsuSpriteText { Text = c.ToString(), TextSize = CalculatedTextSize };

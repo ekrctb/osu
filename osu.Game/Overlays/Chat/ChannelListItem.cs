@@ -7,9 +7,9 @@ using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Online.Chat;
@@ -155,15 +155,15 @@ namespace osu.Game.Overlays.Chat
             FinishTransforms(true);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             if (!channel.Joined.Value)
                 name.FadeColour(hoverColour, 50, Easing.OutQuint);
 
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             if (!channel.Joined.Value)
                 name.FadeColour(Color4.White, transition_duration);

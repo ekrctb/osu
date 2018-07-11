@@ -6,12 +6,12 @@ using OpenTK.Graphics;
 using OpenTK.Input;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Rulesets.Mods;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using osu.Framework.EventArgs;
 
 namespace osu.Game.Overlays.Mods
 {
@@ -70,13 +70,13 @@ namespace osu.Game.Overlays.Mods
             }
         }
 
-        protected override bool OnKeyDown(InputState state, KeyDownEventArgs args)
+        protected override bool OnKeyDown(KeyDownEventArgs args)
         {
             var index = Array.IndexOf(ToggleKeys, args.Key);
             if (index > -1 && index < buttons.Length)
-                buttons[index].SelectNext(state.Keyboard.ShiftPressed ? -1 : 1);
+                buttons[index].SelectNext(args.State.Keyboard.ShiftPressed ? -1 : 1);
 
-            return base.OnKeyDown(state, args);
+            return base.OnKeyDown(args);
         }
 
         public void DeselectAll() => DeselectTypes(buttons.Select(b => b.SelectedMod?.GetType()).Where(t => t != null));

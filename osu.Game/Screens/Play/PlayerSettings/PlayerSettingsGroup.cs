@@ -2,10 +2,10 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
@@ -139,7 +139,7 @@ namespace osu.Game.Screens.Play.PlayerSettings
 
         protected override Container<Drawable> Content => content;
 
-        protected override bool OnHover(InputState state) => true;
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args) => true;
+        protected override bool OnHover(HoverEventArgs args) => true;
+        protected override bool OnMouseDown(MouseDownEventArgs args) => true;
     }
 }

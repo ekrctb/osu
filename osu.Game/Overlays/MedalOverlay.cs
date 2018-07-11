@@ -16,11 +16,11 @@ using osu.Framework.Allocation;
 using osu.Framework.Audio.Sample;
 using osu.Framework.Audio;
 using osu.Framework.Graphics.Textures;
-using osu.Framework.Input;
 using OpenTK.Input;
 using System.Linq;
 using osu.Framework.Graphics.Shapes;
 using System;
+using osu.Framework.EventArgs;
 using osu.Framework.MathUtils;
 
 namespace osu.Game.Overlays
@@ -176,15 +176,15 @@ namespace osu.Game.Overlays
             particleContainer.Add(new MedalParticle(RNG.Next(0, 359)));
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             dismiss();
             return true;
         }
 
-        protected override void OnFocusLost(InputState state)
+        protected override void OnFocusLost(FocusLostEventArgs args)
         {
-            if (state.Keyboard.Keys.Contains(Key.Escape)) dismiss();
+            if (args.State.Keyboard.Keys.Contains(Key.Escape)) dismiss();
         }
 
         private const double initial_duration = 400;

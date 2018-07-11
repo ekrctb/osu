@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
-using osu.Framework.Input;
+using osu.Framework.EventArgs;
 using OpenTK.Input;
 using OpenTK;
 
@@ -31,16 +31,16 @@ namespace osu.Game.Screens.Play
             }
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             if (args.Button == Button) IsLit = true;
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             if (args.Button == Button) IsLit = false;
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
     }
 }

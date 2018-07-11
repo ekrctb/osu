@@ -4,9 +4,9 @@
 using System;
 using osu.Framework;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 using osu.Framework.Threading;
 using osu.Framework.Timing;
 using osu.Game.Graphics;
@@ -126,11 +126,11 @@ namespace osu.Game.Screens.Play
             remainingTimeBox.ResizeWidthTo((float)Math.Max(0, 1 - (Time.Current - displayTime) / (beginFadeTime - displayTime)), 120, Easing.OutQuint);
         }
 
-        protected override bool OnMouseMove(InputState state)
+        protected override bool OnMouseMove(MouseMoveEventArgs args)
         {
-            if (!state.Mouse.HasAnyButtonPressed)
+            if (!args.State.Mouse.HasAnyButtonPressed)
                 fadeContainer.State = Visibility.Visible;
-            return base.OnMouseMove(state);
+            return base.OnMouseMove(args);
         }
 
         public bool OnPressed(GlobalAction action)
@@ -191,16 +191,16 @@ namespace osu.Game.Screens.Play
                 State = Visibility.Visible;
             }
 
-            protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+            protected override bool OnMouseDown(MouseDownEventArgs args)
             {
                 scheduledHide?.Cancel();
-                return base.OnMouseDown(state, args);
+                return base.OnMouseDown(args);
             }
 
-            protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+            protected override bool OnMouseUp(MouseUpEventArgs args)
             {
                 State = Visibility.Visible;
-                return base.OnMouseUp(state, args);
+                return base.OnMouseUp(args);
             }
         }
 
@@ -277,7 +277,7 @@ namespace osu.Game.Screens.Play
                 };
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 flow.TransformSpacingTo(new Vector2(5), 500, Easing.OutQuint);
                 box.FadeColour(colourHover, 500, Easing.OutQuint);
@@ -285,27 +285,27 @@ namespace osu.Game.Screens.Play
                 return true;
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 flow.TransformSpacingTo(new Vector2(0), 500, Easing.OutQuint);
                 box.FadeColour(colourNormal, 500, Easing.OutQuint);
                 background.FadeTo(0.2f, 500, Easing.OutQuint);
-                base.OnHoverLost(state);
+                base.OnHoverLost(args);
             }
 
-            protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+            protected override bool OnMouseDown(MouseDownEventArgs args)
             {
                 aspect.ScaleTo(0.75f, 2000, Easing.OutQuint);
-                return base.OnMouseDown(state, args);
+                return base.OnMouseDown(args);
             }
 
-            protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+            protected override bool OnMouseUp(MouseUpEventArgs args)
             {
                 aspect.ScaleTo(1, 1000, Easing.OutElastic);
-                return base.OnMouseUp(state, args);
+                return base.OnMouseUp(args);
             }
 
-            protected override bool OnClick(InputState state)
+            protected override bool OnClick(ClickEventArgs args)
             {
                 if (!Enabled)
                     return false;
@@ -313,7 +313,7 @@ namespace osu.Game.Screens.Play
                 box.FlashColour(Color4.White, 500, Easing.OutQuint);
                 aspect.ScaleTo(1.2f, 2000, Easing.OutQuint);
 
-                bool result = base.OnClick(state);
+                bool result = base.OnClick(args);
 
                 // for now, let's disable the skip button after the first press.
                 // this will likely need to be contextual in the future (bound from external components).

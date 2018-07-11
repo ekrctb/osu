@@ -5,10 +5,10 @@ using System.ComponentModel;
 using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Input;
 
 namespace osu.Game.Graphics.UserInterface
 {
@@ -28,10 +28,10 @@ namespace osu.Game.Graphics.UserInterface
             RelativeSizeAxes = Axes.Both;
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             sampleHover?.Play();
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
         [BackgroundDependencyLoader]

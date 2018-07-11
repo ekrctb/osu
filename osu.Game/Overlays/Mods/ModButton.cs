@@ -7,12 +7,12 @@ using OpenTK.Input;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.UI;
 using System;
 using System.Linq;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.Cursor;
 using osu.Game.Graphics.UserInterface;
 
@@ -148,18 +148,18 @@ namespace osu.Game.Overlays.Mods
 
         public virtual Mod SelectedMod => Mods.ElementAtOrDefault(selectedIndex);
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             scaleContainer.ScaleTo(0.9f, 800, Easing.Out);
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             scaleContainer.ScaleTo(1, 500, Easing.OutElastic);
 
             // only trigger the event if we are inside the area of the button
-            if (Contains(ToScreenSpace(state.Mouse.Position - Position)))
+            if (Contains(ToScreenSpace(args.MousePosition - Position)))
             {
                 switch (args.Button)
                 {

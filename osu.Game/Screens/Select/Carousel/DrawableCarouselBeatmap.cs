@@ -3,6 +3,7 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
@@ -10,7 +11,6 @@ using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Drawables;
 using osu.Game.Graphics;
@@ -155,12 +155,12 @@ namespace osu.Game.Screens.Select.Carousel
             triangles.Colour = OsuColour.Gray(0.5f);
         }
 
-        protected override bool OnClick(InputState state)
+        protected override bool OnClick(ClickEventArgs args)
         {
             if (Item.State == CarouselItemState.Selected)
                 startRequested?.Invoke(beatmap);
 
-            return base.OnClick(state);
+            return base.OnClick(args);
         }
 
         protected override void ApplyState()

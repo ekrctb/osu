@@ -3,11 +3,11 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Primitives;
 using osu.Framework.Graphics.Shapes;
-using osu.Framework.Input;
 using osu.Game.Rulesets.Edit;
 using OpenTK.Graphics;
 
@@ -56,16 +56,16 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
             };
         }
 
-        protected override bool OnDragStart(InputState state)
+        protected override bool OnDragStart(DragStartEventArgs args)
         {
             this.FadeIn(250, Easing.OutQuint);
             return true;
         }
 
-        protected override bool OnDrag(InputState state)
+        protected override bool OnDrag(DragEventArgs args)
         {
-            var dragPosition = state.Mouse.NativeState.Position;
-            var dragStartPosition = state.Mouse.NativeState.PositionMouseDown ?? dragPosition;
+            var dragPosition = args.ScreenMousePosition;
+            var dragStartPosition = args.ScreenMouseDownPosition;
 
             var dragQuad = new Quad(dragStartPosition.X, dragStartPosition.Y, dragPosition.X - dragStartPosition.X, dragPosition.Y - dragStartPosition.Y);
 
@@ -82,7 +82,7 @@ namespace osu.Game.Screens.Edit.Screens.Compose.Layers
             return true;
         }
 
-        protected override bool OnDragEnd(InputState state)
+        protected override bool OnDragEnd(DragEndEventArgs args)
         {
             this.FadeOut(250, Easing.OutQuint);
             DragEnd?.Invoke();

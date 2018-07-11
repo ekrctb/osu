@@ -6,12 +6,12 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Game.Graphics;
 using osu.Game.Graphics.UserInterface;
 using OpenTK;
 using OpenTK.Graphics;
 using osu.Framework.Configuration;
+using osu.Framework.EventArgs;
 using osu.Game.Screens.Edit.Screens;
 
 namespace osu.Game.Screens.Edit.Menus
@@ -171,18 +171,18 @@ namespace osu.Game.Screens.Edit.Menus
                 {
                 }
 
-                protected override bool OnHover(InputState state)
+                protected override bool OnHover(HoverEventArgs args)
                 {
                     if (Item is EditorMenuItemSpacer)
                         return true;
-                    return base.OnHover(state);
+                    return base.OnHover(args);
                 }
 
-                protected override bool OnClick(InputState state)
+                protected override bool OnClick(ClickEventArgs args)
                 {
                     if (Item is EditorMenuItemSpacer)
                         return true;
-                    return base.OnClick(state);
+                    return base.OnClick(args);
                 }
             }
         }

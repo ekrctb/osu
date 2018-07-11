@@ -4,12 +4,12 @@
 using System.Collections.Generic;
 using OpenTK.Graphics;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
-using osu.Framework.Input;
 using osu.Game.Graphics.Backgrounds;
 using osu.Game.Graphics.Sprites;
 
@@ -71,28 +71,28 @@ namespace osu.Game.Graphics.UserInterface
             this.FadeColour(enabled ? Color4.White : Color4.Gray, 200, Easing.OutQuint);
         }
 
-        protected override bool OnHover(InputState state)
+        protected override bool OnHover(HoverEventArgs args)
         {
             hover.FadeIn(200);
-            return base.OnHover(state);
+            return base.OnHover(args);
         }
 
-        protected override void OnHoverLost(InputState state)
+        protected override void OnHoverLost(HoverLostEventArgs args)
         {
             hover.FadeOut(200);
-            base.OnHoverLost(state);
+            base.OnHoverLost(args);
         }
 
-        protected override bool OnMouseDown(InputState state, MouseDownEventArgs args)
+        protected override bool OnMouseDown(MouseDownEventArgs args)
         {
             Content.ScaleTo(0.9f, 4000, Easing.OutQuint);
-            return base.OnMouseDown(state, args);
+            return base.OnMouseDown(args);
         }
 
-        protected override bool OnMouseUp(InputState state, MouseUpEventArgs args)
+        protected override bool OnMouseUp(MouseUpEventArgs args)
         {
             Content.ScaleTo(1, 1000, Easing.OutElastic);
-            return base.OnMouseUp(state, args);
+            return base.OnMouseUp(args);
         }
 
         public IEnumerable<string> FilterTerms => new[] { Text };

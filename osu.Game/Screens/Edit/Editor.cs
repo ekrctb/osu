@@ -11,8 +11,8 @@ using osu.Game.Graphics;
 using osu.Game.Screens.Edit.Menus;
 using osu.Game.Screens.Edit.Components.Timelines.Summary;
 using osu.Framework.Allocation;
+using osu.Framework.EventArgs;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Framework.Platform;
 using osu.Framework.Timing;
 using osu.Game.Graphics.UserInterface;
@@ -182,9 +182,9 @@ namespace osu.Game.Screens.Edit
             LoadComponentAsync(currentScreen, screenContainer.Add);
         }
 
-        protected override bool OnScroll(InputState state)
+        protected override bool OnScroll(ScrollEventArgs args)
         {
-            if (state.Mouse.ScrollDelta.X + state.Mouse.ScrollDelta.Y > 0)
+            if (args.ScrollDelta.X + args.ScrollDelta.Y > 0)
                 clock.SeekBackward(!clock.IsRunning);
             else
                 clock.SeekForward(!clock.IsRunning);

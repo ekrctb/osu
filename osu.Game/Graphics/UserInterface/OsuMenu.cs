@@ -4,13 +4,13 @@
 using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Audio.Sample;
+using osu.Framework.EventArgs;
 using OpenTK.Graphics;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
-using osu.Framework.Input;
 using osu.Game.Graphics.Sprites;
 using OpenTK;
 
@@ -97,25 +97,25 @@ namespace osu.Game.Graphics.UserInterface
                 }
             }
 
-            protected override bool OnHover(InputState state)
+            protected override bool OnHover(HoverEventArgs args)
             {
                 sampleHover.Play();
                 text.BoldText.FadeIn(transition_length, Easing.OutQuint);
                 text.NormalText.FadeOut(transition_length, Easing.OutQuint);
-                return base.OnHover(state);
+                return base.OnHover(args);
             }
 
-            protected override void OnHoverLost(InputState state)
+            protected override void OnHoverLost(HoverLostEventArgs args)
             {
                 text.BoldText.FadeOut(transition_length, Easing.OutQuint);
                 text.NormalText.FadeIn(transition_length, Easing.OutQuint);
-                base.OnHoverLost(state);
+                base.OnHoverLost(args);
             }
 
-            protected override bool OnClick(InputState state)
+            protected override bool OnClick(ClickEventArgs args)
             {
                 sampleClick.Play();
-                return base.OnClick(state);
+                return base.OnClick(args);
             }
 
             protected sealed override Drawable CreateContent() => text = CreateTextContainer();
