@@ -25,6 +25,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu.Game.Rulesets.Taiko.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "osu.Game.Rulesets.Osu.Tests", "osu.Game.Rulesets.Osu.Tests\osu.Game.Rulesets.Osu.Tests.csproj", "{DECCCC75-67AD-4C3D-BB84-FD0E01323511}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "osu.Framework", "..\osu-framework\osu.Framework\osu.Framework.csproj", "{3FCD9FF0-F6BB-4679-9CC9-5091B4E87B6C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "osu.Framework.Tests", "..\osu-framework\osu.Framework.Tests\osu.Framework.Tests.csproj", "{AC259A5B-D6C8-499D-B8E7-E9D29B099F5E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "osu.Framework.NativeLibs", "..\osu-framework\osu.Framework.NativeLibs\osu.Framework.NativeLibs.csproj", "{45A4CBBB-D8FF-4CCB-ACFE-9679BFB45146}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
