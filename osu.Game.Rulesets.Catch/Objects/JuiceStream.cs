@@ -49,92 +49,76 @@ namespace osu.Game.Rulesets.Catch.Objects
             if (TickDistance == 0)
                 return;
 
-            var length = Path.Distance;
-            var tickDistance = Math.Min(TickDistance, length);
-            var spanDuration = length / Velocity;
-
-            var minDistanceFromEnd = Velocity * 0.01;
-
-            AddNested(new Fruit
+            var tickSamples = Samples.Select(s => new SampleInfo
             {
-                Samples = Samples,
-                StartTime = StartTime,
-                X = X
-            });
+                Bank = s.Bank,
+                Name = @"slidertick",
+                Volume = s.Volume
+            }).ToList();
 
-            double lastTickTime = StartTime;
+            double length = Path.Distance;
+            int spanCount = this.SpanCount();
 
-            for (int span = 0; span < this.SpanCount(); span++)
+            float positionAt(double time)
             {
-                var spanStartTime = StartTime + span * spanDuration;
-                var reversed = span % 2 == 1;
+                double progress = Math.Max(0.0, time - StartTime) * Velocity / length % 2;
+                if (progress <= 1)
+                    return Path.PositionAt(progress).X;
+                else
+                    return Path.PositionAt(2 - progress).X;
+            }
 
-                for (double d = tickDistance;; d += tickDistance)
+            void add(double time, CatchHitObject hitObject)
+            {
+                hitObject.StartTime = time;
+                hitObject.X = X + positionAt(time) / CatchPlayfield.BASE_WIDTH;
+                AddNested(hitObject);
+            }
+
+            void addFruit(double time) => add(time, new Fruit { Samples = Samples });
+            void addDroplet(double time) => add(time, new Droplet { Samples = tickSamples });
+            void addTinyDroplet(double time) => add(time, new TinyDroplet { Samples = tickSamples });
+
+            double getTime(double progressLength) => Math.Floor(StartTime + progressLength / Velocity);
+
+            var tickTimes = new List<double>();
+            addFruit(StartTime);
+
+            for (var span = 0; span < spanCount; ++span)
+            {
+                for (var tickAt = TickDistance; tickAt < length - 1; tickAt += TickDistance)
                 {
-                    bool isLastTick = false;
-                    if (d + minDistanceFromEnd >= length)
-                    {
-                        d = length;
-                        isLastTick = true;
-                    }
-
-                    var timeProgress = d / length;
-                    var distanceProgress = reversed ? 1 - timeProgress : timeProgress;
-
-                    double time = spanStartTime + timeProgress * spanDuration;
-
-                    if (LegacyLastTickOffset != null)
-                    {
-                        // If we're the last tick, apply the legacy offset
-                        if (span == this.SpanCount() - 1 && isLastTick)
-                            time = Math.Max(StartTime + Duration / 2, time - LegacyLastTickOffset.Value);
-                    }
-
-                    double tinyTickInterval = time - lastTickTime;
-                    while (tinyTickInterval > 100)
-                        tinyTickInterval /= 2;
-
-                    for (double t = lastTickTime + tinyTickInterval; t < time; t += tinyTickInterval)
-                    {
-                        double progress = reversed ? 1 - (t - spanStartTime) / spanDuration : (t - spanStartTime) / spanDuration;
-
-                        AddNested(new TinyDroplet
-                        {
-                            StartTime = t,
-                            X = X + Path.PositionAt(progress).X / CatchPlayfield.BASE_WIDTH,
-                            Samples = new List<SampleInfo>(Samples.Select(s => new SampleInfo
-                            {
-                                Bank = s.Bank,
-                                Name = @"slidertick",
-                                Volume = s.Volume
-                            }))
-                        });
-                    }
-
-                    lastTickTime = time;
-
-                    if (isLastTick)
-                        break;
-
-                    AddNested(new Droplet
-                    {
-                        StartTime = time,
-                        X = X + Path.PositionAt(distanceProgress).X / CatchPlayfield.BASE_WIDTH,
-                        Samples = new List<SampleInfo>(Samples.Select(s => new SampleInfo
-                        {
-                            Bank = s.Bank,
-                            Name = @"slidertick",
-                            Volume = s.Volume
-                        }))
-                    });
+                    var time = span % 2 == 0 ? getTime(span * length + tickAt) : getTime((span + 1) * length - tickAt);
+                    tickTimes.Add(time);
+                    addDroplet(time);
                 }
 
-                AddNested(new Fruit
                 {
-                    Samples = Samples,
-                    StartTime = spanStartTime + spanDuration,
-                    X = X + Path.PositionAt(reversed ? 0 : 1).X / CatchPlayfield.BASE_WIDTH
-                });
+                    var time = getTime((span + 1) * length);
+                    tickTimes.Add(time);
+                    addFruit(time);
+                }
+            }
+
+            tickTimes.Sort();
+            if (LegacyLastTickOffset != null)
+            {
+                var lo = Math.Floor(StartTime + length / Velocity * spanCount / 2);
+                tickTimes[tickTimes.Count - 1] = Math.Max(lo, tickTimes[tickTimes.Count - 1] - LegacyLastTickOffset.Value);
+            }
+
+            var lastTime = StartTime;
+            foreach (var time in tickTimes)
+            {
+                var interval = time - lastTime;
+                if (interval > 80)
+                {
+                    while (interval > 100) interval /= 2;
+                    for (var t = lastTime + interval; t < time; t += interval)
+                        addTinyDroplet(Math.Floor(t));
+                }
+
+                lastTime = time;
             }
         }
 
