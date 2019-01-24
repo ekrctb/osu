@@ -18,6 +18,7 @@ namespace osu.Game.Rulesets.Catch.Tests
     {
         protected override string ResourceAssembly => "osu.Game.Rulesets.Catch";
 
+        [TestCase("0")]
         [TestCase("basic")]
         [TestCase("spinner")]
         [TestCase("spinner-and-circles")]
@@ -90,7 +91,7 @@ namespace osu.Game.Rulesets.Catch.Tests
         }
 
         public bool Equals(ConvertValue other)
-            => Precision.AlmostEquals(StartTime, other.StartTime, conversion_lenience)
-               && Precision.AlmostEquals(Position, other.Position, conversion_lenience);
+            => Math.Abs(StartTime - other.StartTime) <= 1
+               && Math.Abs(Position - other.Position) <= conversion_lenience;
     }
 }
