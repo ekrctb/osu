@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2007-2018 ppy Pty Ltd <contact@ppy.sh>.
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/ppy/osu/master/LICENCE
 
+using System;
 using osu.Game.Rulesets.Objects.Types;
 
 namespace osu.Game.Rulesets.Catch.Objects
@@ -26,11 +27,11 @@ namespace osu.Game.Rulesets.Catch.Objects
             if (spacing <= 0)
                 return;
 
-            for (double i = StartTime; i <= EndTime; i += spacing)
+            for (double time = StartTime; time <= EndTime; time += spacing)
                 AddNested(new Banana
                 {
                     Samples = Samples,
-                    StartTime = i
+                    StartTime = Math.Floor(time)
                 });
         }
 
