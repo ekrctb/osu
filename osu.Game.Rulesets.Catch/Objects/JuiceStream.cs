@@ -62,10 +62,7 @@ namespace osu.Game.Rulesets.Catch.Objects
             float positionAt(double time)
             {
                 double progress = Math.Max(0.0, time - StartTime) * Velocity / length % 2;
-                if (progress <= 1)
-                    return Path.PositionAt(progress).X;
-                else
-                    return Path.PositionAt(2 - progress).X;
+                return progress <= 1 ? Path.PositionAt(progress).X : Path.PositionAt(2 - progress).X;
             }
 
             void add(double time, CatchHitObject hitObject)
