@@ -201,7 +201,7 @@ namespace osu.Game.Rulesets.UI.Scrolling
                 layoutCache.Validate();
             }
 
-            if (!combinedObjCache.IsValid)
+            // if (!combinedObjCache.IsValid)
             {
                 switch (direction.Value)
                 {
@@ -220,8 +220,8 @@ namespace osu.Game.Rulesets.UI.Scrolling
                     if (!hitObjectInitialStateCache.TryGetValue(obj, out var state))
                         state = hitObjectInitialStateCache[obj] = new InitialState(new Cached());
 
-                    if (state.Cache.IsValid)
-                        continue;
+                    // if (state.Cache.IsValid)
+                    // continue;
 
                     state.ScheduledComputation?.Cancel();
                     state.ScheduledComputation = computeInitialStateRecursive(obj);
