@@ -6,7 +6,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Effects;
 using osu.Framework.Utils;
-using osu.Game.Rulesets.Catch.Objects.Drawables;
 using osuTK;
 using osuTK.Graphics;
 
@@ -16,13 +15,11 @@ namespace osu.Game.Rulesets.Catch.UI
     {
         private readonly CircularContainer largeFaint;
 
-        public HitExplosion(DrawableCatchHitObject fruit)
+        public HitExplosion(Color4 objectColour)
         {
             Size = new Vector2(20);
             Anchor = Anchor.TopCentre;
             Origin = Anchor.BottomCentre;
-
-            Color4 objectColour = fruit.AccentColour.Value;
 
             // scale roughly in-line with visual appearance of notes
 

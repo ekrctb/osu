@@ -8,6 +8,7 @@ using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Objects.Drawables;
+using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
 {
@@ -20,6 +21,7 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
 
         public readonly Bindable<FruitVisualRepresentation> VisualRepresentation = new Bindable<FruitVisualRepresentation>();
         public readonly Bindable<bool> HyperDash = new Bindable<bool>();
+        public readonly Bindable<Color4> AccentColour = new Bindable<Color4>();
 
         [CanBeNull]
         private DrawableCatchHitObject drawableHitObject;
@@ -58,19 +60,19 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
             switch (representation)
             {
                 case FruitVisualRepresentation.Pear:
-                    return new PearPiece();
+                    return new PearPiece { AccentColour = { BindTarget = AccentColour } };
 
                 case FruitVisualRepresentation.Grape:
-                    return new GrapePiece();
+                    return new GrapePiece { AccentColour = { BindTarget = AccentColour } };
 
                 case FruitVisualRepresentation.Pineapple:
-                    return new PineapplePiece();
+                    return new PineapplePiece { AccentColour = { BindTarget = AccentColour } };
 
                 case FruitVisualRepresentation.Banana:
-                    return new BananaPiece();
+                    return new BananaPiece { AccentColour = { BindTarget = AccentColour } };
 
                 case FruitVisualRepresentation.Raspberry:
-                    return new RaspberryPiece();
+                    return new RaspberryPiece { AccentColour = { BindTarget = AccentColour } };
             }
 
             return Empty();

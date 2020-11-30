@@ -2,12 +2,14 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using JetBrains.Annotations;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Catch.Judgements;
 using osu.Game.Rulesets.Catch.Objects;
 using osu.Game.Rulesets.Catch.Objects.Drawables;
+using osu.Game.Rulesets.Catch.Objects.Drawables.Pieces;
 using osu.Game.Rulesets.Catch.Replays;
 using osu.Game.Rulesets.Judgements;
 using osu.Game.Rulesets.Objects.Drawables;
@@ -31,7 +33,7 @@ namespace osu.Game.Rulesets.Catch.UI
             set => MovableCatcher.ExplodingFruitTarget = value;
         }
 
-        private DrawableCatchHitObject lastPlateableFruit;
+        private Drawable lastPlateableFruit;
 
         public CatcherArea(BeatmapDifficulty difficulty = null)
         {
@@ -56,52 +58,38 @@ namespace osu.Game.Rulesets.Catch.UI
             if (!result.Type.IsScorable())
                 return;
 
-            void runAfterLoaded(Action action)
-            {
-                if (lastPlateableFruit == null)
-                    return;
-
-                // this is required to make this run after the last caught fruit runs updateState() at least once.
-                // TODO: find a better alternative
-                if (lastPlateableFruit.IsLoaded)
-                    action();
-                else
-                    lastPlateableFruit.OnLoadComplete += _ => action();
-            }
-
             if (result.IsHit && hitObject is DrawablePalpableCatchHitObject fruit)
             {
-                // create a new (cloned) fruit to stay on the plate. the original is faded out immediately.
-                var caughtFruit = (DrawableCatchHitObject)CreateDrawableRepresentation?.Invoke(fruit.HitObject);
-
-                if (caughtFruit == null) return;
-
-                caughtFruit.RelativePositionAxes = Axes.None;
-                caughtFruit.Position = new Vector2(MovableCatcher.ToLocalSpace(hitObject.ScreenSpaceDrawQuad.Centre).X - MovableCatcher.DrawSize.X / 2, 0);
-                caughtFruit.IsOnPlate = true;
-
-                caughtFruit.Anchor = Anchor.TopCentre;
-                caughtFruit.Origin = Anchor.Centre;
-                caughtFruit.Scale *= 0.5f;
-                caughtFruit.LifetimeStart = caughtFruit.HitObject.StartTime;
-                caughtFruit.LifetimeEnd = double.MaxValue;
-
-                MovableCatcher.PlaceOnPlate(caughtFruit);
-                lastPlateableFruit = caughtFruit;
-
-                if (!fruit.StaysOnPlate)
-                    runAfterLoaded(() => MovableCatcher.Explode(caughtFruit));
+                addCaughtObject(fruit);
             }
 
             if (hitObject.HitObject.LastInCombo)
             {
                 if (result.Judgement is CatchJudgement catchJudgement && catchJudgement.ShouldExplodeFor(result))
-                    runAfterLoaded(() => MovableCatcher.Explode());
+                    MovableCatcher.Explode();
                 else
                     MovableCatcher.Drop();
             }
 
             comboDisplay.OnNewResult(hitObject, result);
+        }
+
+        private void addCaughtObject(DrawablePalpableCatchHitObject fruit)
+        {
+            var caughtObject = getCaughtObject(fruit);
+
+            if (caughtObject == null) return;
+
+            caughtObject.Anchor = Anchor.TopCentre;
+            caughtObject.Origin = Anchor.Centre;
+            caughtObject.RelativePositionAxes = Axes.None;
+            caughtObject.Position = new Vector2(MovableCatcher.ToLocalSpace(fruit.ScreenSpaceDrawQuad.Centre).X - MovableCatcher.DrawSize.X / 2, 0);
+
+            MovableCatcher.PlaceOnPlate(caughtObject, fruit);
+            lastPlateableFruit = caughtObject;
+
+            if (!fruit.StaysOnPlate)
+                MovableCatcher.Explode(caughtObject);
         }
 
         public void OnRevertResult(DrawableCatchHitObject fruit, JudgementResult result)
@@ -126,6 +114,26 @@ namespace osu.Game.Rulesets.Catch.UI
                 MovableCatcher.X = state.CatcherX.Value;
 
             comboDisplay.X = MovableCatcher.X;
+        }
+
+        [CanBeNull]
+        private Drawable getCaughtObject(DrawablePalpableCatchHitObject drawableObject)
+        {
+            return drawableObject.HitObject switch
+            {
+                Fruit _ => new FruitPiece
+                {
+                    VisualRepresentation = { BindTarget = ((DrawableFruit)drawableObject).VisualRepresentation },
+                    HyperDash = { BindTarget = drawableObject.HyperDash },
+                    AccentColour = { BindTarget = drawableObject.AccentColour },
+                    RelativeSizeAxes = Axes.None,
+                    // TODO TODO
+                    Size = new Vector2(CatchHitObject.OBJECT_RADIUS * 2 * drawableObject.ScaleBindable.Value),
+                },
+                // TinyDroplet tinyDroplet => throw new NotImplementedException(),
+                // Droplet droplet => throw new NotImplementedException(),
+                _ => null,
+            };
         }
     }
 }
