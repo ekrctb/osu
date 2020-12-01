@@ -10,7 +10,6 @@ using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Catch.Judgements;
 using osu.Game.Rulesets.Catch.Objects;
 using osu.Game.Rulesets.Catch.Objects.Drawables;
-using osu.Game.Rulesets.Catch.Objects.Drawables.Pieces;
 using osu.Game.Rulesets.Catch.Replays;
 using osu.Game.Rulesets.Judgements;
 using osu.Game.Rulesets.Objects.Drawables;
@@ -34,16 +33,16 @@ namespace osu.Game.Rulesets.Catch.UI
             set => MovableCatcher.ExplodingFruitTarget = value;
         }
 
-        private readonly DrawablePool<FruitPiece> caughtFruitPool;
-        private readonly DrawablePool<DropletPiece> caughtDropletPool;
+        private readonly DrawablePool<CaughtFruit> caughtFruitPool;
+        private readonly DrawablePool<CaughtDroplet> caughtDropletPool;
 
         public CatcherArea(BeatmapDifficulty difficulty = null)
         {
             Size = new Vector2(CatchPlayfield.WIDTH, CATCHER_SIZE);
             Children = new Drawable[]
             {
-                caughtFruitPool = new DrawablePool<FruitPiece>(1),
-                caughtDropletPool = new DrawablePool<DropletPiece>(1),
+                caughtFruitPool = new DrawablePool<CaughtFruit>(1),
+                caughtDropletPool = new DrawablePool<CaughtDroplet>(1),
                 comboDisplay = new CatchComboDisplay
                 {
                     RelativeSizeAxes = Axes.None,
@@ -81,15 +80,7 @@ namespace osu.Game.Rulesets.Catch.UI
         private void addCaughtObject(DrawablePalpableCatchHitObject fruit)
         {
             var caughtObject = getCaughtObject(fruit);
-
             if (caughtObject == null) return;
-
-            caughtObject.ClearTransforms();
-            caughtObject.Alpha = 1;
-            caughtObject.Anchor = Anchor.TopCentre;
-            caughtObject.Origin = Anchor.Centre;
-            caughtObject.RelativePositionAxes = Axes.None;
-            caughtObject.Position = new Vector2(MovableCatcher.ToLocalSpace(fruit.ScreenSpaceDrawQuad.Centre).X - MovableCatcher.DrawSize.X / 2, 0);
 
             MovableCatcher.PlaceOnPlate(caughtObject, fruit);
 
@@ -122,30 +113,34 @@ namespace osu.Game.Rulesets.Catch.UI
         }
 
         [CanBeNull]
-        private Drawable getCaughtObject(DrawablePalpableCatchHitObject drawableObject)
+        private PoolableCaughtObject getCaughtObject(DrawablePalpableCatchHitObject drawableObject)
         {
-            switch (drawableObject.HitObject)
-            {
-                case Fruit fruit:
-                    var caughtFruit = caughtFruitPool.Get();
-                    caughtFruit.VisualRepresentation.Value = ((DrawableFruit)drawableObject).VisualRepresentation.Value;
-                    caughtFruit.HyperDash.Value = drawableObject.HyperDash.Value;
-                    caughtFruit.AccentColour.Value = drawableObject.AccentColour.Value;
-                    caughtFruit.RelativeSizeAxes = Axes.None;
-                    caughtFruit.Size = new Vector2(CatchHitObject.OBJECT_RADIUS * 2);
-                    caughtFruit.Scale = new Vector2(fruit.Scale * drawableObject.ScaleFactor * 0.5f);
-                    return caughtFruit;
+            PoolableCaughtObject caughtObject;
 
-                case Droplet droplet:
-                    var caughtDroplet = caughtDropletPool.Get();
-                    caughtDroplet.HyperDash.Value = drawableObject.HyperDash.Value;
-                    caughtDroplet.AccentColour.Value = drawableObject.AccentColour.Value;
-                    caughtDroplet.Scale = new Vector2(droplet.Scale * drawableObject.ScaleFactor * 0.5f);
-                    return caughtDroplet;
+            switch (drawableObject)
+            {
+                case DrawableFruit fruit:
+                    CaughtFruit caughtFruit = caughtFruitPool.Get();
+
+                    // Copying the value because the value will change when the DHO is reused for the next hit object.
+                    caughtFruit.VisualRepresentation.Value = fruit.VisualRepresentation.Value;
+
+                    caughtObject = caughtFruit;
+                    break;
+
+                case DrawableDroplet _:
+                    caughtObject = caughtDropletPool.Get();
+                    break;
 
                 default:
                     return null;
             }
+
+            caughtObject.AccentColour.Value = drawableObject.AccentColour.Value;
+            caughtObject.Scale = drawableObject.ScaleContainer.Scale * 0.5f;
+            caughtObject.Rotation = drawableObject.ScaleContainer.Rotation;
+
+            return caughtObject;
         }
     }
 }

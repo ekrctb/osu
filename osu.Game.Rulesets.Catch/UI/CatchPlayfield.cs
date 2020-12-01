@@ -4,6 +4,7 @@
 using System;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Pooling;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Catch.Objects;
 using osu.Game.Rulesets.Catch.Objects.Drawables;
@@ -80,7 +81,61 @@ namespace osu.Game.Rulesets.Catch.UI
             => CatcherArea.OnRevertResult((DrawableCatchHitObject)judgedObject, result);
     }
 
-    internal class ExplodingFruitContainer : Container
+    internal class ExplodingFruitContainer : CompositeDrawable
     {
+        private readonly DrawablePool<CaughtFruit> explodingFruitPool;
+        private readonly DrawablePool<CaughtDroplet> explodingDropletPool;
+        private readonly Container expldingObjectContainer;
+
+        public ExplodingFruitContainer()
+        {
+            InternalChildren = new Drawable[]
+            {
+                explodingFruitPool = new DrawablePool<CaughtFruit>(1),
+                explodingDropletPool = new DrawablePool<CaughtDroplet>(1),
+                expldingObjectContainer = new Container
+                {
+                    RelativeSizeAxes = Axes.Both,
+                }
+            };
+        }
+
+        public void AddCopyOf(PoolableCaughtObject caughtObject, Action<Drawable> animationAction)
+        {
+            PoolableCaughtObject explodingObject;
+
+            switch (caughtObject)
+            {
+                case CaughtFruit caughtFruit:
+                    CaughtFruit explodingFruit = explodingFruitPool.Get();
+
+                    explodingFruit.VisualRepresentation.Value = caughtFruit.VisualRepresentation.Value;
+
+                    explodingObject = explodingFruit;
+                    break;
+
+                case CaughtDroplet _:
+                    explodingObject = explodingDropletPool.Get();
+                    break;
+
+                default:
+                    return;
+            }
+
+            explodingObject.Alpha = 1;
+
+            explodingObject.AccentColour.Value = caughtObject.AccentColour.Value;
+            explodingObject.Scale = caughtObject.Scale;
+            explodingObject.Rotation = caughtObject.Rotation;
+
+            explodingObject.Anchor = Anchor.TopLeft;
+            explodingObject.Position = expldingObjectContainer.ToLocalSpace(caughtObject.Parent.ToScreenSpace(caughtObject.Position));
+
+            using (explodingObject.BeginAbsoluteSequence(Clock.CurrentTime))
+                animationAction(explodingObject);
+            explodingObject.Expire();
+
+            expldingObjectContainer.Add(explodingObject);
+        }
     }
 }

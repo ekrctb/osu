@@ -4,13 +4,13 @@
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Pooling;
+using osu.Framework.Graphics.Containers;
 using osuTK;
 using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
 {
-    public class DropletPiece : PoolableDrawable
+    public class DropletPiece : CompositeDrawable
     {
         public readonly Bindable<bool> HyperDash = new Bindable<bool>();
         public readonly Bindable<Color4> AccentColour = new Bindable<Color4>();

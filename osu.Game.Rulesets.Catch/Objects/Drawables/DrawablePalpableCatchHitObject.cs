@@ -30,7 +30,7 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         /// </summary>
         public virtual bool StaysOnPlate => true;
 
-        protected readonly Container ScaleContainer;
+        public readonly Container ScaleContainer;
 
         protected DrawablePalpableCatchHitObject([CanBeNull] CatchHitObject h)
             : base(h)

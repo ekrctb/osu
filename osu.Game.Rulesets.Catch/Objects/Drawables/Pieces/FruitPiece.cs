@@ -6,13 +6,13 @@ using JetBrains.Annotations;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Pooling;
+using osu.Framework.Graphics.Containers;
 using osu.Game.Rulesets.Objects.Drawables;
 using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
 {
-    internal class FruitPiece : PoolableDrawable
+    internal class FruitPiece : CompositeDrawable
     {
         /// <summary>
         /// Because we're adding a border around the fruit, we need to scale down some.
