@@ -35,7 +35,7 @@ namespace osu.Game.Rulesets.Catch.UI
 
         public CatchPlayfield(BeatmapDifficulty difficulty, Func<CatchHitObject, DrawableHitObject<CatchHitObject>> createDrawableRepresentation)
         {
-            var explodingFruitContainer = new Container
+            var explodingFruitContainer = new ExplodingFruitContainer
             {
                 RelativeSizeAxes = Axes.Both,
             };
@@ -78,5 +78,9 @@ namespace osu.Game.Rulesets.Catch.UI
 
         private void onRevertResult(DrawableHitObject judgedObject, JudgementResult result)
             => CatcherArea.OnRevertResult((DrawableCatchHitObject)judgedObject, result);
+    }
+
+    internal class ExplodingFruitContainer : Container
+    {
     }
 }

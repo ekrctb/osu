@@ -23,7 +23,7 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         /// <summary>
         /// The multiplicative factor applied to <see cref="ScaleContainer"/> scale relative to <see cref="HitObject"/> scale.
         /// </summary>
-        protected virtual float ScaleFactor => 1;
+        public virtual float ScaleFactor => 1;
 
         /// <summary>
         /// Whether this hit object should stay on the catcher plate when the object is caught by the catcher.

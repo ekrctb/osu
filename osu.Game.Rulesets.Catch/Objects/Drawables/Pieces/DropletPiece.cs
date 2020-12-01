@@ -4,15 +4,16 @@
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
-using osu.Framework.Graphics.Containers;
-using osu.Game.Rulesets.Objects.Drawables;
+using osu.Framework.Graphics.Pooling;
 using osuTK;
+using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
 {
-    public class DropletPiece : CompositeDrawable
+    public class DropletPiece : PoolableDrawable
     {
         public readonly Bindable<bool> HyperDash = new Bindable<bool>();
+        public readonly Bindable<Color4> AccentColour = new Bindable<Color4>();
 
         public DropletPiece()
         {
@@ -20,12 +21,12 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables.Pieces
         }
 
         [BackgroundDependencyLoader]
-        private void load(DrawableHitObject drawableObject)
+        private void load()
         {
             InternalChild = new Pulp
             {
                 RelativeSizeAxes = Axes.Both,
-                AccentColour = { BindTarget = drawableObject.AccentColour }
+                AccentColour = { BindTarget = AccentColour }
             };
 
             if (HyperDash.Value)

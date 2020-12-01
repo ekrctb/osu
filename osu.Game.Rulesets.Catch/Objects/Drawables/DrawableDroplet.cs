@@ -30,7 +30,8 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
                 new CatchSkinComponent(CatchSkinComponents.Droplet),
                 _ => new DropletPiece
                 {
-                    HyperDash = { BindTarget = HyperDash }
+                    HyperDash = { BindTarget = HyperDash },
+                    AccentColour = { BindTarget = AccentColour }
                 });
         }
 

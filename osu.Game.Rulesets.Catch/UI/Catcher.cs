@@ -45,7 +45,7 @@ namespace osu.Game.Rulesets.Catch.UI
         /// </summary>
         public const double BASE_SPEED = 1.0;
 
-        public Container ExplodingFruitTarget;
+        internal ExplodingFruitContainer ExplodingFruitTarget;
 
         private Container<Drawable> caughtFruitContainer { get; } = new Container<Drawable>
         {
@@ -471,18 +471,18 @@ namespace osu.Game.Rulesets.Catch.UI
 
         private void removeFromPlateWithTransform(Drawable caughtObject, Action<Drawable> action)
         {
-            if (ExplodingFruitTarget != null)
-            {
-                caughtObject.Anchor = Anchor.TopLeft;
-                caughtObject.Position = caughtFruitContainer.ToSpaceOfOtherDrawable(caughtObject.DrawPosition, ExplodingFruitTarget);
-
-                if (!caughtFruitContainer.Remove(caughtObject))
-                    // we may have already been removed by a previous operation (due to the weird OnLoadComplete scheduling).
-                    // this avoids a crash on potentially attempting to Add a fruit to ExplodingFruitTarget twice.
-                    return;
-
-                ExplodingFruitTarget.Add(caughtObject);
-            }
+            // if (ExplodingFruitTarget != null)
+            // {
+            //     caughtObject.Anchor = Anchor.TopLeft;
+            //     caughtObject.Position = caughtFruitContainer.ToSpaceOfOtherDrawable(caughtObject.DrawPosition, ExplodingFruitTarget);
+            //
+            //     if (!caughtFruitContainer.Remove(caughtObject))
+            //         // we may have already been removed by a previous operation (due to the weird OnLoadComplete scheduling).
+            //         // this avoids a crash on potentially attempting to Add a fruit to ExplodingFruitTarget twice.
+            //         return;
+            //
+            //     ExplodingFruitTarget.Add(caughtObject);
+            // }
 
             using (caughtObject.BeginAbsoluteSequence(Clock.CurrentTime))
                 action(caughtObject);

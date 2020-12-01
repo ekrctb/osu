@@ -43,6 +43,7 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
                 {
                     VisualRepresentation = { BindTarget = VisualRepresentation },
                     HyperDash = { BindTarget = HyperDash },
+                    AccentColour = { BindTarget = AccentColour },
                 });
         }
 
