@@ -187,9 +187,9 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables
             return base.CreateNestedHitObject(hitObject);
         }
 
-        protected override void ApplySkin(ISkinSource skin, bool allowFallback)
+        protected override void ApplySkin(ISkinSource skin)
         {
-            base.ApplySkin(skin, allowFallback);
+            base.ApplySkin(skin);
             spinnerFrequencyModulate = skin.GetConfig<OsuSkinConfiguration, bool>(OsuSkinConfiguration.SpinnerFrequencyModulate)?.Value ?? true;
         }
 

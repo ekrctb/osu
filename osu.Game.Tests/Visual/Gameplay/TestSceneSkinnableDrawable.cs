@@ -182,7 +182,7 @@ namespace osu.Game.Tests.Visual.Gameplay
 
             public ExposedSkinnableDrawable(string name, Func<ISkinComponent, Drawable> defaultImplementation, Func<ISkinSource, bool> allowFallback = null,
                                             ConfineMode confineMode = ConfineMode.ScaleToFit)
-                : base(new TestSkinComponent(name), defaultImplementation, allowFallback, confineMode)
+                : base(new TestSkinComponent(name), defaultImplementation, confineMode)
             {
             }
         }
@@ -251,13 +251,13 @@ namespace osu.Game.Tests.Visual.Gameplay
             public int SkinChangedCount { get; private set; }
 
             public SkinConsumer(string name, Func<ISkinComponent, Drawable> defaultImplementation, Func<ISkinSource, bool> allowFallback = null)
-                : base(new TestSkinComponent(name), defaultImplementation, allowFallback)
+                : base(new TestSkinComponent(name), defaultImplementation)
             {
             }
 
-            protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+            protected override void SkinChanged(ISkinSource skin)
             {
-                base.SkinChanged(skin, allowFallback);
+                base.SkinChanged(skin);
                 SkinChangedCount++;
             }
         }

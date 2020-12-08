@@ -9,13 +9,13 @@ namespace osu.Game.Skinning
     public class SkinnableSpriteText : SkinnableDrawable, IHasText
     {
         public SkinnableSpriteText(ISkinComponent component, Func<ISkinComponent, SpriteText> defaultImplementation, Func<ISkinSource, bool> allowFallback = null, ConfineMode confineMode = ConfineMode.NoScaling)
-            : base(component, defaultImplementation, allowFallback, confineMode)
+            : base(component, defaultImplementation, confineMode)
         {
         }
 
-        protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
 
             if (Drawable is IHasText textDrawable)
                 textDrawable.Text = Text;

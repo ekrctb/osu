@@ -18,9 +18,9 @@ namespace osu.Game.Screens.Play.HUD
 
         private IComboCounter skinnedCounter;
 
-        protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
 
             skinnedCounter = Drawable as IComboCounter;
             skinnedCounter?.Current.BindTo(Current);

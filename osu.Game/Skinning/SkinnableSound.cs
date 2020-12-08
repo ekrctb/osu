@@ -136,9 +136,9 @@ namespace osu.Game.Skinning
             samplesContainer.ForEach(c => c.Stop());
         }
 
-        protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
             updateSamples();
         }
 

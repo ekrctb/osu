@@ -48,9 +48,9 @@ namespace osu.Game.Screens.Play.HUD
 
         private IScoreCounter skinnedCounter;
 
-        protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
 
             skinnedCounter = Drawable as IScoreCounter;
 

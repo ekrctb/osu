@@ -524,13 +524,13 @@ namespace osu.Game.Rulesets.Objects.Drawables
 
         #endregion
 
-        protected sealed override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected sealed override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
 
             UpdateComboColour();
 
-            ApplySkin(skin, allowFallback);
+            ApplySkin(skin);
 
             if (IsLoaded)
                 updateState(State.Value, true);
@@ -565,8 +565,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
         /// Called when a change is made to the skin.
         /// </summary>
         /// <param name="skin">The new skin.</param>
-        /// <param name="allowFallback">Whether fallback to default skin should be allowed if the custom skin is missing this resource.</param>
-        protected virtual void ApplySkin(ISkinSource skin, bool allowFallback)
+        protected virtual void ApplySkin(ISkinSource skin)
         {
         }
 

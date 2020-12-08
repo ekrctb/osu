@@ -40,9 +40,9 @@ namespace osu.Game.Screens.Play
 
         private IHealthDisplay skinnedCounter;
 
-        protected override void SkinChanged(ISkinSource skin, bool allowFallback)
+        protected override void SkinChanged(ISkinSource skin)
         {
-            base.SkinChanged(skin, allowFallback);
+            base.SkinChanged(skin);
 
             skinnedCounter = Drawable as IHealthDisplay;
             skinnedCounter?.Current.BindTo(Current);

@@ -228,9 +228,9 @@ namespace osu.Game.Rulesets.Osu.Objects.Drawables
             sliderBody?.RecyclePath();
         }
 
-        protected override void ApplySkin(ISkinSource skin, bool allowFallback)
+        protected override void ApplySkin(ISkinSource skin)
         {
-            base.ApplySkin(skin, allowFallback);
+            base.ApplySkin(skin);
 
             updateBallTint();
         }
