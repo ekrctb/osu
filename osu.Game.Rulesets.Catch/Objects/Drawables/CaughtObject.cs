@@ -21,6 +21,8 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         public Bindable<Color4> AccentColour { get; } = new Bindable<Color4>();
         public Bindable<bool> HyperDash { get; } = new Bindable<bool>();
 
+        public Bindable<int> IndexInBeatmap { get; } = new Bindable<int>();
+
         public Vector2 DisplaySize => Size * Scale;
 
         public float DisplayRotation => Rotation;
@@ -44,13 +46,14 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         /// <summary>
         /// Copies the hit object visual state from another <see cref="IHasCatchObjectState"/> object.
         /// </summary>
-        public virtual void CopyStateFrom(IHasCatchObjectState objectState)
+        public void CopyStateFrom(IHasCatchObjectState objectState)
         {
             HitObject = objectState.HitObject;
             Scale = Vector2.Divide(objectState.DisplaySize, Size);
             Rotation = objectState.DisplayRotation;
             AccentColour.Value = objectState.AccentColour.Value;
             HyperDash.Value = objectState.HyperDash.Value;
+            IndexInBeatmap.Value = objectState.IndexInBeatmap.Value;
         }
 
         protected override void FreeAfterUse()

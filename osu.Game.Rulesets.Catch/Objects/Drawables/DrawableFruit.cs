@@ -3,17 +3,14 @@
 
 using JetBrains.Annotations;
 using osu.Framework.Allocation;
-using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Game.Rulesets.Catch.Skinning.Default;
 using osu.Game.Skinning;
 
 namespace osu.Game.Rulesets.Catch.Objects.Drawables
 {
-    public class DrawableFruit : DrawablePalpableCatchHitObject, IHasFruitState
+    public class DrawableFruit : DrawablePalpableCatchHitObject
     {
-        public Bindable<FruitVisualRepresentation> VisualRepresentation { get; } = new Bindable<FruitVisualRepresentation>();
-
         public DrawableFruit()
             : this(null)
         {
@@ -27,15 +24,15 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         [BackgroundDependencyLoader]
         private void load()
         {
-            IndexInBeatmap.BindValueChanged(change =>
-            {
-                VisualRepresentation.Value = (FruitVisualRepresentation)(change.NewValue % 4);
-            }, true);
-
             ScalingContainer.Child = new SkinnableDrawable(
                 new CatchSkinComponent(CatchSkinComponents.Fruit),
                 _ => new FruitPiece());
         }
+
+        /// <summary>
+        /// Compute the type of fruit from <see cref="CatchHitObject.IndexInBeatmap"/>.
+        /// </summary>
+        public static FruitVisualRepresentation GetVisualRepresentation(int indexInBeatmap) => (FruitVisualRepresentation)(indexInBeatmap % 4);
 
         protected override void UpdateInitialTransforms()
         {

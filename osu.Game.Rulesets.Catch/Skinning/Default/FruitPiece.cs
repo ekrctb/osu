@@ -39,8 +39,10 @@ namespace osu.Game.Rulesets.Catch.Skinning.Default
         {
             base.LoadComplete();
 
-            var fruitState = (IHasFruitState)ObjectState;
-            VisualRepresentation.BindTo(fruitState.VisualRepresentation);
+            IndexInBeatmap.BindValueChanged(index =>
+            {
+                VisualRepresentation.Value = DrawableFruit.GetVisualRepresentation(index.NewValue);
+            }, true);
         }
     }
 }
