@@ -6,7 +6,7 @@ using osu.Game.Rulesets.Catch.Objects.Drawables;
 
 namespace osu.Game.Rulesets.Catch.Skinning.Legacy
 {
-    internal class LegacyFruitPiece : LegacyCatchHitObjectPiece
+    public class LegacyFruitPiece : LegacyCatchHitObjectPiece
     {
         public readonly Bindable<FruitVisualRepresentation> VisualRepresentation = new Bindable<FruitVisualRepresentation>();
 

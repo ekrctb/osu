@@ -69,10 +69,8 @@ namespace osu.Game.Rulesets.Catch.Tests
             ManualClock = new ManualClock();
             Clock = new FramedClock(ManualClock);
 
-            var hitObject = d.HitObject;
-            hitObject.ApplyDefaults(new ControlPointInfo(), new BeatmapDifficulty());
-            hitObject.Scale = 1.5f;
-            hitObject.StartTime = 500;
+            if (d.HitObject != null)
+                PrepareHitObject(d.HitObject);
 
             d.Anchor = Anchor.Centre;
             d.HitObjectApplied += _ =>
@@ -82,6 +80,13 @@ namespace osu.Game.Rulesets.Catch.Tests
             };
 
             InternalChild = d;
+        }
+
+        public static void PrepareHitObject(CatchHitObject hitObject)
+        {
+            hitObject.ApplyDefaults(new ControlPointInfo(), new BeatmapDifficulty());
+            hitObject.Scale = 1.5f;
+            hitObject.StartTime = 500;
         }
     }
 }
