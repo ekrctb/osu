@@ -150,7 +150,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
         /// The <see cref="HitObjectLifetimeEntry"/> controlling the lifetime of the currently-attached <see cref="HitObject"/>.
         /// </summary>
         [CanBeNull]
-        private HitObjectLifetimeEntry lifetimeEntry;
+        protected HitObjectLifetimeEntry LifetimeEntry { get; private set; }
 
         [Resolved(CanBeNull = true)]
         private IPooledHitObjectProvider pooledObjectProvider { get; set; }
@@ -186,7 +186,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
             base.LoadAsyncComplete();
 
             if (HitObject != null)
-                Apply(HitObject, lifetimeEntry);
+                Apply(HitObject, LifetimeEntry);
         }
 
         protected override void LoadComplete()
@@ -209,7 +209,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
 
             HitObject = hitObject ?? throw new InvalidOperationException($"Cannot apply a null {nameof(HitObject)}.");
 
-            this.lifetimeEntry = lifetimeEntry;
+            LifetimeEntry = lifetimeEntry;
 
             if (lifetimeEntry != null)
             {
@@ -326,7 +326,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
             HitObject = null;
             ParentHitObject = null;
             Result = null;
-            lifetimeEntry = null;
+            LifetimeEntry = null;
 
             clearExistingStateTransforms();
 
@@ -389,7 +389,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
 
         private void onDefaultsApplied(HitObject hitObject)
         {
-            Apply(hitObject, lifetimeEntry);
+            Apply(hitObject, LifetimeEntry);
             DefaultsApplied?.Invoke(this);
         }
 
@@ -660,10 +660,10 @@ namespace osu.Game.Rulesets.Objects.Drawables
             base.LifetimeStart = lifetimeStart;
             base.LifetimeEnd = lifetimeEnd;
 
-            if (lifetimeEntry != null)
+            if (LifetimeEntry != null)
             {
-                lifetimeEntry.LifetimeStart = lifetimeStart;
-                lifetimeEntry.LifetimeEnd = lifetimeEnd;
+                LifetimeEntry.LifetimeStart = lifetimeStart;
+                LifetimeEntry.LifetimeEnd = lifetimeEnd;
             }
         }
 

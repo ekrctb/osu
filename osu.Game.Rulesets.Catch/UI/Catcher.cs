@@ -221,8 +221,8 @@ namespace osu.Game.Rulesets.Catch.UI
                 var objectRadius = palpableObject.DisplaySize.X / 2;
                 var positionInStack = CaughtObjectContainer.GetPositionInStack(catchPosition, objectRadius);
 
-                Debug.Assert(catchResult.CaughtObjectEntry == null);
-                catchResult.CaughtObjectEntry = CaughtObjectContainer.AddCaughtObject(palpableObject, positionInStack, stackMirrorDirection);
+                Debug.Assert(drawableObject.CaughtObjectEntry == null);
+                drawableObject.CaughtObjectEntry = CaughtObjectContainer.AddCaughtObject(palpableObject, positionInStack, stackMirrorDirection);
 
                 if (hitLighting.Value)
                     addLighting(hitObject, positionInStack.X, drawableObject.AccentColour.Value);
@@ -264,15 +264,24 @@ namespace osu.Game.Rulesets.Catch.UI
                     SetHyperDashState();
             }
 
-            if (catchResult.CaughtObjectEntry != null)
+            if (drawableObject.CaughtObjectEntry != null)
             {
-                removeCaughtObject(catchResult.CaughtObjectEntry);
-                catchResult.CaughtObjectEntry = null;
+                CaughtObjectContainer.RemoveCaughtObject(drawableObject.CaughtObjectEntry);
+                drawableObject.CaughtObjectEntry = null;
             }
 
             double time = result.TimeAbsolute;
 
             hitExplosionContainer.RemoveAll(d => d.LifetimeStart >= time);
+        }
+
+        public void OnHitObjectLifetimeEntryRemoved(CatchHitObjectLifetimeEntry lifetimeEntry)
+        {
+            if (lifetimeEntry.CaughtObjectEntry != null)
+            {
+                CaughtObjectContainer.RemoveCaughtObject(lifetimeEntry.CaughtObjectEntry);
+                lifetimeEntry.CaughtObjectEntry = null;
+            }
         }
 
         /// <summary>

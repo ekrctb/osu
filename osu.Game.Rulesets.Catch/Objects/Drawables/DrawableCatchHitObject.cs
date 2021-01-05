@@ -8,6 +8,7 @@ using osu.Framework.Graphics;
 using osu.Game.Rulesets.Catch.Judgements;
 using osu.Game.Rulesets.Catch.UI;
 using osu.Game.Rulesets.Judgements;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Utils;
 
@@ -23,6 +24,22 @@ namespace osu.Game.Rulesets.Catch.Objects.Drawables
         protected override float SamplePlaybackPosition => HitObject.EffectiveX / CatchPlayfield.WIDTH;
 
         public int RandomSeed => HitObject?.RandomSeed ?? 0;
+
+        [CanBeNull]
+        protected new CatchHitObjectLifetimeEntry LifetimeEntry => (CatchHitObjectLifetimeEntry)base.LifetimeEntry;
+
+        [CanBeNull]
+        public CaughtObjectEntry CaughtObjectEntry
+        {
+            get => LifetimeEntry?.CaughtObjectEntry;
+            set
+            {
+                if (LifetimeEntry == null)
+                    throw new InvalidOperationException($"Cannot set {nameof(CaughtObjectEntry)} of a {nameof(DrawableCaughtObject)} not associated with a {nameof(HitObjectLifetimeEntry)}");
+
+                LifetimeEntry.CaughtObjectEntry = value;
+            }
+        }
 
         protected DrawableCatchHitObject([CanBeNull] CatchHitObject hitObject)
             : base(hitObject)
