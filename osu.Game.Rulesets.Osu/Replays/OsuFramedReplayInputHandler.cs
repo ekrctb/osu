@@ -19,7 +19,12 @@ namespace osu.Game.Rulesets.Osu.Replays
 
         public override void CollectPendingInputs(List<IInput> inputs)
         {
-            var position = Interpolation.ValueAt(CurrentTime, CurrentFrame.Position, NextFrame.Position, CurrentFrame.Time, NextFrame.Time);
+            // There is an edge case of the frame positions are on a slider but an interpolated position is not.
+            // TODO: autoplay is noticeably non-smooth.
+            bool canInterpolate = CurrentFrame.Actions.Count == 0;
+            var position = canInterpolate
+                ? Interpolation.ValueAt(CurrentTime, CurrentFrame.Position, NextFrame.Position, CurrentFrame.Time, NextFrame.Time)
+                : CurrentFrame.Position;
             inputs.Add(new MousePositionAbsoluteInput { Position = GamefieldToScreenSpace(position) });
             inputs.Add(new ReplayState<OsuAction> { PressedActions = CurrentFrame.Actions });
         }
