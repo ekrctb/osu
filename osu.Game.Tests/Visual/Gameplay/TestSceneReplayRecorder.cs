@@ -181,14 +181,14 @@ namespace osu.Game.Tests.Visual.Gameplay
         public class TestFramedReplayInputHandler : FramedReplayInputHandler<TestReplayFrame>
         {
             public TestFramedReplayInputHandler(Replay replay)
-                : base(replay)
+                : base(replay, new TestReplayFrame(0, Vector2.Zero))
             {
             }
 
             public override void CollectPendingInputs(List<IInput> inputs)
             {
-                inputs.Add(new MousePositionAbsoluteInput { Position = GamefieldToScreenSpace(CurrentFrame?.Position ?? Vector2.Zero) });
-                inputs.Add(new ReplayState<TestAction> { PressedActions = CurrentFrame?.Actions ?? new List<TestAction>() });
+                inputs.Add(new MousePositionAbsoluteInput { Position = GamefieldToScreenSpace(CurrentFrame.Position) });
+                inputs.Add(new ReplayState<TestAction> { PressedActions = CurrentFrame.Actions });
             }
         }
 

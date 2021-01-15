@@ -16,19 +16,20 @@ namespace osu.Game.Input.Handlers
 {
     public abstract class ReplayInputHandler : InputHandler
     {
+        public virtual bool ShouldPause => false;
+
         /// <summary>
         /// A function that converts coordinates from gamefield to screen space.
         /// </summary>
         public Func<Vector2, Vector2> GamefieldToScreenSpace { protected get; set; }
 
         /// <summary>
-        /// Update the current frame based on an incoming time value.
-        /// There are cases where we return a "must-use" time value that is different from the input.
-        /// This is to ensure accurate playback of replay data.
+        /// Progress the current time towards the proposed time.
+        /// If there is a frame boundary between the current time and the proposed time, .
         /// </summary>
-        /// <param name="time">The time which we should use for finding the current frame.</param>
-        /// <returns>The usable time value. If null, we should not advance time as we do not have enough data.</returns>
-        public abstract double? SetFrameFromTime(double time);
+        /// <param name="proposedTime">The time which we should use for finding the current frame.</param>
+        /// <returns>The resulting time.</returns>
+        public abstract double SetFrameFromTime(double proposedTime);
 
         public override bool Initialize(GameHost host) => true;
 

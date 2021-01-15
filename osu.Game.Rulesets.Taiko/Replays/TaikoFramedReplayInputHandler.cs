@@ -3,7 +3,6 @@
 
 using osu.Game.Rulesets.Replays;
 using System.Collections.Generic;
-using System.Linq;
 using osu.Framework.Input.StateChanges;
 using osu.Game.Replays;
 
@@ -12,15 +11,13 @@ namespace osu.Game.Rulesets.Taiko.Replays
     internal class TaikoFramedReplayInputHandler : FramedReplayInputHandler<TaikoReplayFrame>
     {
         public TaikoFramedReplayInputHandler(Replay replay)
-            : base(replay)
+            : base(replay, new TaikoReplayFrame())
         {
         }
 
-        protected override bool IsImportant(TaikoReplayFrame frame) => frame.Actions.Any();
-
         public override void CollectPendingInputs(List<IInput> inputs)
         {
-            inputs.Add(new ReplayState<TaikoAction> { PressedActions = CurrentFrame?.Actions ?? new List<TaikoAction>() });
+            inputs.Add(new ReplayState<TaikoAction> { PressedActions = CurrentFrame.Actions });
         }
     }
 }

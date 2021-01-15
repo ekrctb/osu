@@ -2,11 +2,10 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using osu.Framework.Input.StateChanges;
 using osu.Framework.Utils;
 using osu.Game.Replays;
+using osu.Game.Rulesets.Catch.UI;
 using osu.Game.Rulesets.Replays;
 
 namespace osu.Game.Rulesets.Catch.Replays
@@ -14,41 +13,24 @@ namespace osu.Game.Rulesets.Catch.Replays
     public class CatchFramedReplayInputHandler : FramedReplayInputHandler<CatchReplayFrame>
     {
         public CatchFramedReplayInputHandler(Replay replay)
-            : base(replay)
+            : base(replay, new CatchReplayFrame { Position = CatchPlayfield.CENTER_X })
         {
-        }
-
-        protected override bool IsImportant(CatchReplayFrame frame) => frame.Actions.Any();
-
-        protected float? Position
-        {
-            get
-            {
-                var frame = CurrentFrame;
-
-                if (frame == null)
-                    return null;
-
-                Debug.Assert(CurrentTime != null);
-
-                return NextFrame != null ? Interpolation.ValueAt(CurrentTime.Value, frame.Position, NextFrame.Position, frame.Time, NextFrame.Time) : frame.Position;
-            }
         }
 
         public override void CollectPendingInputs(List<IInput> inputs)
         {
-            if (!Position.HasValue) return;
+            float position = Interpolation.ValueAt(CurrentTime, CurrentFrame.Position, NextFrame.Position, CurrentFrame.Time, NextFrame.Time);
 
             inputs.Add(new CatchReplayState
             {
-                PressedActions = CurrentFrame?.Actions ?? new List<CatchAction>(),
-                CatcherX = Position.Value
+                PressedActions = CurrentFrame.Actions,
+                CatcherX = position
             });
         }
 
         public class CatchReplayState : ReplayState<CatchAction>
         {
-            public float? CatcherX { get; set; }
+            public float CatcherX { get; set; }
         }
     }
 }

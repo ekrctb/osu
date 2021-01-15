@@ -116,7 +116,7 @@ namespace osu.Game.Tests.Visual.Gameplay
     public class TestFramedReplayInputHandler : FramedReplayInputHandler<TestReplayFrame>
     {
         public TestFramedReplayInputHandler(Replay replay)
-            : base(replay)
+            : base(replay, new TestReplayFrame(0, Vector2.Zero))
         {
         }
 
@@ -191,6 +191,11 @@ namespace osu.Game.Tests.Visual.Gameplay
         public Vector2 Position;
 
         public List<TestAction> Actions = new List<TestAction>();
+
+        public TestReplayFrame()
+            : this(0, Vector2.Zero)
+        {
+        }
 
         public TestReplayFrame(double time, Vector2 position, params TestAction[] actions)
             : base(time)

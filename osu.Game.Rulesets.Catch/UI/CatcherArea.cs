@@ -67,10 +67,13 @@ namespace osu.Game.Rulesets.Catch.UI
         {
             base.UpdateAfterChildren();
 
-            var state = (GetContainingInputManager().CurrentState as RulesetInputManagerInputState<CatchAction>)?.LastReplayState as CatchFramedReplayInputHandler.CatchReplayState;
+            var inputManager = GetContainingInputManager();
 
-            if (state?.CatcherX != null)
-                MovableCatcher.X = state.CatcherX.Value;
+            if (inputManager.CurrentState is RulesetInputManagerInputState<CatchAction> inputState &&
+                inputState.LastReplayState is CatchFramedReplayInputHandler.CatchReplayState replayState)
+            {
+                MovableCatcher.X = replayState.CatcherX;
+            }
 
             comboDisplay.X = MovableCatcher.X;
         }

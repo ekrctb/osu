@@ -167,7 +167,10 @@ namespace osu.Game.Rulesets.UI
         /// <returns>Whether playback is still valid.</returns>
         private bool updateReplay(ref double proposedTime)
         {
-            double? newTime;
+            if (ReplayInputHandler.ShouldPause)
+                return false;
+
+            double newTime;
 
             if (FrameStablePlayback)
             {
@@ -181,19 +184,10 @@ namespace osu.Game.Rulesets.UI
                 // for the current time.
                 while ((newTime = ReplayInputHandler.SetFrameFromTime(proposedTime)) != proposedTime)
                 {
-                    if (newTime == null)
-                    {
-                        // special case for when the replay actually can't arrive at the required time.
-                        // protects from potential endless loop.
-                        break;
-                    }
                 }
             }
 
-            if (newTime == null)
-                return false;
-
-            proposedTime = newTime.Value;
+            proposedTime = newTime;
             return true;
         }
 

@@ -199,7 +199,7 @@ namespace osu.Game.Tests.Visual.Gameplay
                 return;
             }
 
-            if (replayHandler.NextFrame != null)
+            if (replayHandler.HasNextFrame)
             {
                 var lastFrame = replay.Frames.LastOrDefault();
 
@@ -213,12 +213,7 @@ namespace osu.Game.Tests.Visual.Gameplay
                 double proposedTime = Time.Current - latency + Time.Elapsed;
 
                 // this will either advance by one or zero frames.
-                double? time = replayHandler.SetFrameFromTime(proposedTime);
-
-                if (time == null)
-                    return;
-
-                manualClock.CurrentTime = time.Value;
+                manualClock.CurrentTime = replayHandler.SetFrameFromTime(proposedTime);
             }
         }
 
@@ -235,7 +230,7 @@ namespace osu.Game.Tests.Visual.Gameplay
         public class TestFramedReplayInputHandler : FramedReplayInputHandler<TestReplayFrame>
         {
             public TestFramedReplayInputHandler(Replay replay)
-                : base(replay)
+                : base(replay, new TestReplayFrame())
             {
             }
 
