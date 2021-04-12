@@ -70,8 +70,7 @@ namespace osu.Game.Rulesets.Replays
         // This input handler should be enabled only if there is at least one replay frame.
         public override bool IsActive => HasFrames;
 
-        // Can make it non-null but that is a breaking change.
-        protected double? CurrentTime { get; private set; }
+        protected double CurrentTime { get; private set; }
 
         protected virtual double AllowedImportantTimeSpan => sixty_frame_time * 1.2;
 
@@ -101,7 +100,7 @@ namespace osu.Game.Rulesets.Replays
                     return false;
 
                 return IsImportant(CurrentFrame) && // a button is in a pressed state
-                       Math.Abs(CurrentTime - NextFrame.Time ?? 0) <= AllowedImportantTimeSpan; // the next frame is within an allowable time span
+                       Math.Abs(CurrentTime - NextFrame.Time) <= AllowedImportantTimeSpan; // the next frame is within an allowable time span
             }
         }
 
@@ -151,7 +150,7 @@ namespace osu.Game.Rulesets.Replays
             CurrentTime = Math.Clamp(time, frameStart, frameEnd);
 
             // In an important section, a mid-frame time cannot be used and a null is returned instead.
-            return inImportantSection && frameStart < time && time < frameEnd ? null : CurrentTime;
+            return inImportantSection && frameStart < time && time < frameEnd ? null : (double?)CurrentTime;
         }
 
         private double getFrameTime(int index)

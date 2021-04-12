@@ -20,7 +20,7 @@ namespace osu.Game.Rulesets.Taiko.Replays
 
         public override void CollectPendingInputs(List<IInput> inputs)
         {
-            inputs.Add(new ReplayState<TaikoAction> { PressedActions = CurrentFrame?.Actions ?? new List<TaikoAction>() });
+            inputs.Add(new ReplayState<TaikoAction> { PressedActions = CurrentFrame.Actions });
         }
     }
 }

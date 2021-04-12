@@ -20,7 +20,7 @@ namespace osu.Game.Rulesets.Mania.Replays
 
         public override void CollectPendingInputs(List<IInput> inputs)
         {
-            inputs.Add(new ReplayState<ManiaAction> { PressedActions = CurrentFrame?.Actions ?? new List<ManiaAction>() });
+            inputs.Add(new ReplayState<ManiaAction> { PressedActions = CurrentFrame.Actions });
         }
     }
 }
