@@ -55,7 +55,7 @@ namespace osu.Game.Rulesets.Catch.Replays
             //Building the score
             List<CatchStepFunction> scores = new List<CatchStepFunction>();
             List<double> times = new List<double>();
-            scores.Insert(0, new CatchStepFunction()); // After the last object, there is no more score to be made
+            scores.Insert(0, new CatchStepFunction(0, CatchPlayfield.WIDTH)); // After the last object, there is no more score to be made
             times.Insert(0, 1 + objects[^1].StartTime); //some time after the last object
 
             for (int i = objects.Count - 1; i >= 0; --i)

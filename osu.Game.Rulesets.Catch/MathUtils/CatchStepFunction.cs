@@ -3,25 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using NUnit.Framework;
-using osu.Game.Rulesets.Catch.UI;
 
 namespace osu.Game.Rulesets.Catch.MathUtils
 {
     /// <summary>
-    /// Represent a step function (piecewise constant function) mapping from the interval [0, <see cref="CatchStepFunction.WIDTH"/>] to an integer.
+    /// Represent a step function (piecewise constant function).
+    /// The domain is the given interval, and the output is an integer.
     /// </summary>
     /// <remarks>
     /// Values on the discontinuities are confused, and which of the adjacent interval is used is unspecified.
     /// </remarks>
     public class CatchStepFunction
     {
-        /// <summary>
-        /// The upper bound of the domain.
-        /// </summary>
-        public const float WIDTH = CatchPlayfield.WIDTH;
-
         ///<summary>
         /// The domain of the function is partitioned into pieces so the function is constant within each piece.
         /// Each piece <c>i</c> is the interval [<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>].
@@ -34,33 +29,43 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         ///</summary>
         private readonly List<int> values = new List<int>();
 
+        public float DomainLo => partition[0];
+        public float DomainUp => partition[^1];
+
         ///<summary>
-        /// Construct the constant zero function.
+        /// Construct the constant zero function on the specified domain [<paramref name="lower"/>, <paramref name="upper"/>].
         ///</summary>
-        public CatchStepFunction()
+        public CatchStepFunction(float lower, float upper)
         {
-            partition.Add(0);
-            partition.Add(WIDTH);
+            if (!(lower < upper))
+                throw new ArgumentException($"The domain of a {nameof(CatchStepFunction)} must be non-empty.");
+
+            partition.Add(lower);
+            partition.Add(upper);
             values.Add(0);
         }
 
         ///<summary>
         /// Construct the step function as the rolling window max function of the <paramref name="input"/> using the window size <paramref name="halfWindowWidth"/>.
         /// The rolling window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ [-w,+w] }</c>.
+        /// The domain of the resulting function is same as the domain of <paramref name="input"/>.
         ///</summary>
         public CatchStepFunction(CatchStepFunction input, float halfWindowWidth)
         {
-            Assert.GreaterOrEqual(halfWindowWidth, 0);
+            Trace.Assert(halfWindowWidth > 0);
 
             // windowsLeft is the index of the first input partition that is strictly greater than the left of the window
             // windowsRight is the index of the first input partition that is strictly greater than the right of the window
             int windowLeft = 0, windowRight;
             Queue<int> window = new Queue<int>();
 
+            float domainLo = input.DomainLo;
+            float domainUp = input.DomainUp;
+
             // Extend the input function left and right, to simplify things
-            input.partition.Add(WIDTH + halfWindowWidth);
+            input.partition.Add(domainUp + halfWindowWidth);
             input.values.Add(0);
-            input.partition.Insert(0, -halfWindowWidth);
+            input.partition.Insert(0, domainLo - halfWindowWidth);
             input.values.Insert(0, 0);
 
             // Initialising the window.
@@ -71,7 +76,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
 
             // At each iteration we slide the windows one step to the right,
             // adding a new value and partition each time, until the end.
-            partition.Add(0);
+            partition.Add(domainLo);
 
             while (true)
             {
@@ -105,7 +110,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                     partition.RemoveAt(partition.Count - 1);
             }
 
-            partition.Add(WIDTH);
+            partition.Add(domainUp);
 
             // Revert the extension
             input.partition.RemoveAt(0);
@@ -145,11 +150,11 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         /// Modify the function to make <paramref name="value"/> is added to the value on the interval [<paramref name="from"/>, <paramref name="to"/>].
         /// Function values outside the interval are unchanged.
         ///</summary>
+        /// <exception cref="ArgumentException">The given interval is not contained in the domain.</exception>
         public void Add(float from, float to, int value)
         {
-            Assert.GreaterOrEqual(from, 0);
-            Assert.GreaterOrEqual(to, from);
-            Assert.GreaterOrEqual(WIDTH, to);
+            if (!(DomainLo <= from && to <= DomainUp))
+                throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
 
             int indexStart, indexEnd;
 
@@ -175,11 +180,11 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval [<paramref name="from"/>, <paramref name="to"/>].
         /// Function values outside the interval are unchanged.
         /// </summary>
+        /// <exception cref="ArgumentException">The given interval is not contained in the domain.</exception>
         public void Set(float from, float to, int value)
         {
-            Assert.GreaterOrEqual(from, 0);
-            Assert.GreaterOrEqual(to, from);
-            Assert.GreaterOrEqual(WIDTH, to);
+            if (!(DomainLo <= from && to <= DomainUp))
+                throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
 
             int indexStart, indexEnd;
 
@@ -225,8 +230,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         ///</summary>
         public float OptimalPath(float from, float to, float target)
         {
-            Assert.GreaterOrEqual(to, target);
-            Assert.GreaterOrEqual(target, from);
+            if (!(from <= target && target <= to))
+                throw new ArgumentOutOfRangeException(nameof(target), $"The target {target} is not in the given interval [{from}, {to}].");
 
             int max = Max(from, to);
             float ret = -1, value = -1;
