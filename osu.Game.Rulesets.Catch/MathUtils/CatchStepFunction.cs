@@ -12,9 +12,6 @@ namespace osu.Game.Rulesets.Catch.MathUtils
     /// Represent a step function (piecewise constant function).
     /// The domain is the given interval, and the output is an integer.
     /// </summary>
-    /// <remarks>
-    /// Values on the discontinuities are confused, and which of the adjacent interval is used is unspecified.
-    /// </remarks>
     public class CatchStepFunction
     {
         ///<summary>
@@ -156,6 +153,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             if (!(DomainLo <= from && to <= DomainUp))
                 throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
 
+            if (!(from < to)) return;
+
             int indexStart, indexEnd;
 
             for (indexStart = 0; partition[indexStart] <= from; ++indexStart)
@@ -186,6 +185,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             if (!(DomainLo <= from && to <= DomainUp))
                 throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
 
+            if (!(from < to)) return;
+
             int indexStart, indexEnd;
 
             for (indexStart = 0; partition[indexStart] <= from; ++indexStart)
@@ -207,10 +208,12 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Compute the maximum function value on the interval [<param name="from"></param>, <param name="to"></param>].
+        /// Compute the maximum function value on the *open* interval (<param name="from"></param>, <param name="to"></param>).
         ///</summary>
         public int Max(float from, float to)
         {
+            if (!(from < to)) return 0;
+
             int max = 0;
 
             for (int i = 0; i < values.Count; ++i)
@@ -222,6 +225,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             return max;
         }
 
+        // TODO: endpoints (open vs closed)
         ///<summary>
         /// Returns a point in the interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>]
         /// where the function value is maximum in the given interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>].
@@ -234,7 +238,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 throw new ArgumentOutOfRangeException(nameof(target), $"The target {target} is not in the given interval [{from}, {to}].");
 
             int max = Max(from, to);
-            float ret = -1, value = -1;
+            float ret = target, value = -1;
 
             for (int i = 0; i < values.Count; ++i)
             {
