@@ -9,26 +9,33 @@ using osu.Game.Rulesets.Catch.UI;
 
 namespace osu.Game.Rulesets.Catch.MathUtils
 {
-    ///<summary>
-    /// Step function on [0;<see cref="CatchStepFunction.WIDTH"/>]
-    ///</summary>
+    /// <summary>
+    /// Represent a step function (piecewise constant function) mapping from the interval [0, <see cref="CatchStepFunction.WIDTH"/>] to an integer.
+    /// </summary>
+    /// <remarks>
+    /// Values on the discontinuities are confused, and which of the adjacent interval is used is unspecified.
+    /// </remarks>
     public class CatchStepFunction
     {
+        /// <summary>
+        /// The upper bound of the domain.
+        /// </summary>
         public const float WIDTH = CatchPlayfield.WIDTH;
 
         ///<summary>
-        /// Partition of the step function, on [0;<see cref="CatchStepFunction.WIDTH"/>]
+        /// The domain of the function is partitioned into pieces so the function is constant within each piece.
+        /// Each piece <c>i</c> is the interval [<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>].
         ///</summary>
         private readonly List<float> partition = new List<float>();
 
         ///<summary>
-        /// Values that the step function takes.
-        /// value[i] is the value on [partition[i], partition[i+1]]
+        /// Values that the function takes.
+        /// <see cref="values"/><c>[i]</c> is the value of the function on the interval [<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>].
         ///</summary>
         private readonly List<int> values = new List<int>();
 
         ///<summary>
-        /// Constructs a null function.
+        /// Construct the constant zero function.
         ///</summary>
         public CatchStepFunction()
         {
@@ -38,7 +45,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Constructs a step function as the rolling maximum of another, with a set rolling window size.
+        /// Construct the step function as the rolling window max function of the <paramref name="input"/> using the window size <paramref name="halfWindowWidth"/>.
+        /// The rolling window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ [-w,+w] }</c>.
         ///</summary>
         public CatchStepFunction(CatchStepFunction input, float halfWindowWidth)
         {
@@ -105,13 +113,14 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             input.values.RemoveAt(0);
             input.values.RemoveAt(input.values.Count - 1);
 
-            cleanup();
+            normalize();
         }
 
         ///<summary>
-        /// Removes redundant Partition.
+        /// Minimize the partition representation of the function.
+        /// Adjacent intervals with the same value are melded, and empty intervals are removed.
         ///</summary>
-        private void cleanup()
+        private void normalize()
         {
             for (int i = values.Count - 1; i > 1; --i)
             {
@@ -133,8 +142,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Adds <param name="value"></param> time the indicator function of
-        /// [<param name="from"></param>, <param name="to"></param>] to the step function.
+        /// Modify the function to make <paramref name="value"/> is added to the value on the interval [<paramref name="from"/>, <paramref name="to"/>].
+        /// Function values outside the interval are unchanged.
         ///</summary>
         public void Add(float from, float to, int value)
         {
@@ -159,9 +168,13 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             values.Insert(indexEnd - 1, values[indexEnd - 1]);
             for (int i = indexStart; i < indexEnd; ++i)
                 values[i] += value;
-            cleanup();
+            normalize();
         }
 
+        /// <summary>
+        /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval [<paramref name="from"/>, <paramref name="to"/>].
+        /// Function values outside the interval are unchanged.
+        /// </summary>
         public void Set(float from, float to, int value)
         {
             Assert.GreaterOrEqual(from, 0);
@@ -185,11 +198,11 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             values.Insert(indexEnd - 1, values[indexEnd - 1]);
             for (int i = indexStart; i < indexEnd; ++i)
                 values[i] = value;
-            cleanup();
+            normalize();
         }
 
         ///<summary>
-        /// Maximal value on [<param name="from"></param>, <param name="to"></param>]
+        /// Compute the maximum function value on the interval [<param name="from"></param>, <param name="to"></param>].
         ///</summary>
         public int Max(float from, float to)
         {
@@ -205,11 +218,10 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Returns a point of [<paramref name="from"></paramref>, <paramref name="to"></paramref>] that reach the
-        /// maximal value on [<paramref name="from"></paramref>, <paramref name="to"></paramref>].
-        /// Returns <paramref name="target"></paramref> if it works,
-        /// we return the point furthest away from a suboptimal point otherwise,
-        /// as it will often be the easiest optimal path, from a gameplay perspective.
+        /// Returns a point in the interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>]
+        /// where the function value is maximum in the given interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>].
+        /// Returns <paramref name="target"></paramref> if it works.
+        /// Otherwise, a point furthest away from the suboptimal points is returned.
         ///</summary>
         public float OptimalPath(float from, float to, float target)
         {
@@ -226,6 +238,8 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                     if (target >= partition[i] && target <= partition[i + 1])
                         return target;
 
+                    // TODO: this is wrong when the mid point is not in the given interval
+                    // TODO: also, what if adjacent interval outside the given interval has a larger value?
                     float newValue = partition[i + 1] - partition[i];
 
                     if (newValue > value)
