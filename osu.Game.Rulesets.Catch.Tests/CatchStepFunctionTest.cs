@@ -24,7 +24,7 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                 for (int testStep = 0; testStep < 10; testStep++)
                 {
-                    switch (rng.Next(4))
+                    switch (rng.Next(5))
                     {
                         case 0:
                         {
@@ -55,11 +55,22 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                         case 3:
                         {
-                            int x = rng.Next(size + 1);
+                            float x = rng.Next(size * 2 + 1) / 2f;
                             int value = naive.Get(rng.Next(0, size));
                             float expected = naive.DistanceToSmaller(x, value);
                             float actual = func.DistanceToSmaller(x, value);
                             Assert.AreEqual(expected, actual);
+                            break;
+                        }
+
+                        case 4:
+                        {
+                            var (lo, up) = nextInterval();
+                            float expectedDistance = naive.GetOptimalDistance(lo, up);
+                            float actualPoint = func.GetOptimalPoint(lo, up);
+                            float actualDistance = naive.DistanceToSmaller(actualPoint, naive.Max(lo, up));
+                            Assert.That(actualPoint, Is.InRange(lo, up));
+                            Assert.AreEqual(expectedDistance, actualDistance);
                             break;
                         }
                     }
@@ -130,20 +141,34 @@ namespace osu.Game.Rulesets.Catch.Tests
             /// <summary>
             /// Get the distance from <paramref name="x"/> to a point with a value smaller than <paramref name="value"/>.
             /// </summary>
-            public float DistanceToSmaller(int x, int value)
+            public float DistanceToSmaller(float x, int value)
             {
                 float distance = float.PositiveInfinity;
 
                 for (int i = 0; i < values.Length; i++)
                 {
                     if (values[i] < value)
-                        distance = Math.Min(distance, Math.Min(Math.Abs(i - x), Math.Abs(x - (i + 1))));
+                        distance = Math.Min(distance, i <= x && x < i + 1 ? 0 : Math.Min(Math.Abs(i - x), Math.Abs(x - (i + 1))));
                 }
 
                 if (value > 0)
                     distance = Math.Min(distance, Math.Min(Math.Abs(x), Math.Abs(values.Length - x)));
 
                 return distance;
+            }
+
+            public float GetOptimalDistance(int lo, int up)
+            {
+                int max = Max(lo, up);
+                float res = 0;
+
+                for (int i = lo; i <= up; i++)
+                    res = Math.Max(res, DistanceToSmaller(i, max));
+
+                for (int i = lo; i < up; i++)
+                    res = Math.Max(res, DistanceToSmaller(i + 0.5f, max));
+
+                return res;
             }
         }
     }

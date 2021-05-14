@@ -200,42 +200,6 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             return max.Value;
         }
 
-        ///<summary>
-        /// Returns a point in the  interval (<paramref name="from"></paramref>, <paramref name="to"></paramref>) taking the maximum value.
-        /// Among all such points, a point furthest away from the suboptimal points is returned (i.e. maximizing <see cref="DistanceToSmaller"/>).
-        /// </summary>
-        /// <returns>An optimal point furthest away from the suboptimal points.</returns>
-        /// <exception cref="ArgumentException">The given interval is empty.</exception>
-        public float GetOptimalPoint(float from, float to)
-        {
-            if (!(from < to))
-                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
-
-            int max = Max(from, to);
-
-            float ret = -1;
-            float value = -1;
-
-            for (int i = 0; i < values.Count; ++i)
-            {
-                if (values[i] == max && partition[i] < to && partition[i + 1] > from)
-                {
-                    // TODO: this is wrong when the mid point is not in the given interval
-                    // TODO: also, what if adjacent interval outside the given interval has a larger value?
-                    float newValue = partition[i + 1] - partition[i];
-
-                    if (newValue > value)
-                    {
-                        value = newValue;
-                        ret = Math.Clamp((partition[i + 1] + partition[i]) / 2, from, to);
-                    }
-                }
-            }
-
-            Debug.Assert(value != -1);
-            return ret;
-        }
-
         /// <summary>
         /// Get the distance from <paramref name="x"/> to a point with a function value smaller than <paramref name="value"/>.
         /// </summary>
@@ -254,6 +218,51 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             while (indexUp < values.Count && values[indexUp] >= value) indexUp++;
 
             return indexLo == indexUp ? 0 : Math.Min(x - partition[indexLo + 1], partition[indexUp] - x);
+        }
+
+        ///<summary>
+        /// Returns a point in the interval (<paramref name="from"></paramref>, <paramref name="to"></paramref>) taking the maximum value.
+        /// Among all such points, a point furthest away from the suboptimal points is returned (i.e. maximizing <see cref="DistanceToSmaller"/>).
+        /// </summary>
+        /// <returns>An optimal point furthest away from the suboptimal points.</returns>
+        /// <exception cref="ArgumentException">The given interval is empty.</exception>
+        public float GetOptimalPoint(float from, float to)
+        {
+            if (!(from < to))
+                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
+
+            int max = Max(from, to);
+
+            float ret = -1;
+            float value = -1;
+
+            float currentLo = partition[0];
+
+            for (int i = 0; i < partition.Count - 1; ++i)
+            {
+                if (values[i] < max)
+                    currentLo = partition[i + 1];
+
+                float currentUp = partition[i + 1];
+
+                if (currentLo < to && currentUp > from)
+                {
+                    float mid = float.IsFinite(currentLo) && float.IsFinite(currentUp) ? (currentLo + currentUp) / 2 :
+                        float.IsFinite(currentLo) ? currentLo :
+                        float.IsFinite(currentUp) ? currentUp : 0;
+                    float x = mid <= from ? from : to <= mid ? to : mid;
+                    float dist = Math.Min(x - currentLo, currentUp - x);
+
+                    if (value < dist)
+                    {
+                        value = dist;
+                        ret = x;
+                    }
+                }
+            }
+
+            Debug.Assert(value != -1);
+            return ret;
         }
     }
 }
