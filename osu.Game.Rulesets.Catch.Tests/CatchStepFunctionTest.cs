@@ -20,7 +20,7 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                 int size = rng.Next(3, 10);
                 var naive = new DiscreteStepFunction(size);
-                var func = new CatchStepFunction(0, size);
+                var func = new CatchStepFunction();
 
                 for (int testStep = 0; testStep < 10; testStep++)
                 {
@@ -57,9 +57,9 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                 (int, int) nextInterval()
                 {
-                    int lo = rng.Next(0, size + 1);
-                    int up = rng.Next(0, size + 1);
-                    return lo <= up ? (lo, up) : (up, lo);
+                    int lo = rng.Next(0, size);
+                    int up = rng.Next(0, size);
+                    return lo <= up ? (lo, up + 1) : (up, lo + 1);
                 }
             }
         }
@@ -78,64 +78,43 @@ namespace osu.Game.Rulesets.Catch.Tests
             }
 
             /// <summary>
-            /// Add <paramref name="val"/> to the half-closed interval [<paramref name="lo"/>, <paramref name="up"/>).
+            /// Add <paramref name="val"/> to the interval <paramref name="lo"/>..<paramref name="up"/>.
             /// </summary>
             public void Add(int lo, int up, int val)
             {
-                Debug.Assert(0 <= lo && lo <= up && up <= values.Length);
+                clipInterval(ref lo, ref up);
                 for (int i = lo; i < up; i++)
                     values[i] += val;
             }
 
             /// <summary>
-            /// Assign <paramref name="val"/> to the half-closed interval [<paramref name="lo"/>, <paramref name="up"/>).
+            /// Assign <paramref name="val"/> to the interval <paramref name="lo"/>..<paramref name="up"/>.
             /// </summary>
             public void Set(int lo, int up, int val)
             {
-                Debug.Assert(0 <= lo && lo <= up && up <= values.Length);
+                clipInterval(ref lo, ref up);
                 for (int i = lo; i < up; i++)
                     values[i] = val;
             }
 
             /// <summary>
-            /// Compute the maximum value in the half-closed interval [<paramref name="lo"/>, <paramref name="up"/>).
+            /// Compute the maximum value in the interval <paramref name="lo"/>..<paramref name="up"/>.
             /// </summary>
-            /// <returns>The maximum value, or <c>0</c> if the given interval was empty.</returns>
             public int Max(int lo, int up)
             {
-                lo = Math.Max(0, lo);
-                up = Math.Min(up, values.Length);
-                if (lo >= up) return 0;
-
+                clipInterval(ref lo, ref up);
                 int max = values[lo];
                 for (int i = lo + 1; i < up; i++)
                     max = Math.Max(max, values[i]);
+
                 return max;
             }
 
-            public float MaxRobustness(int lo, int up)
+            private void clipInterval(ref int lo, ref int up)
             {
-                Debug.Assert(0 <= lo && lo <= up && up <= values.Length);
-                int maxValue = Max(lo, up);
-                int maxRobustness = -1;
-
-                for (int i = lo; i < up; i++)
-                {
-                    if (values[i] == maxValue)
-                        maxRobustness = Math.Max(maxRobustness, GetRobustness(i));
-                }
-
-                Debug.Assert(maxRobustness >= 0);
-                return maxRobustness;
-            }
-
-            public int GetRobustness(int x)
-            {
-                int lo = x, up = x;
-
-                while (lo >= 0 && values[lo] >= values[x]) lo--;
-                while (up < values.Length && values[up] >= values[x]) up++;
-                return up - lo;
+                lo = Math.Max(0, lo);
+                up = Math.Min(up, values.Length);
+                Debug.Assert(lo < up);
             }
         }
     }

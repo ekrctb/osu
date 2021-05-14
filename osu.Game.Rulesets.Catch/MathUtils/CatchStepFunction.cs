@@ -9,88 +9,73 @@ using System.Linq;
 namespace osu.Game.Rulesets.Catch.MathUtils
 {
     /// <summary>
-    /// Represent a step function (piecewise constant function).
-    /// The domain is the given interval, and the output is an integer.
+    /// Represent a step function (piecewise constant function with finitely many pieces).
+    ///
+    /// Each piece is an open interval.
+    /// The disjoint union of all pieces partitions the real line excluding finitely many singularities between pieces.
     /// </summary>
     public class CatchStepFunction
     {
         ///<summary>
         /// The domain of the function is partitioned into pieces so the function is constant within each piece.
-        /// Each piece <c>i</c> is the interval [<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>].
+        /// Each piece <c>i</c> is the interval (<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>).
         ///</summary>
         private readonly List<float> partition = new List<float>();
 
         ///<summary>
         /// Values that the function takes.
-        /// <see cref="values"/><c>[i]</c> is the value of the function on the interval [<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>].
+        /// <see cref="values"/><c>[i]</c> is the value of the function on the interval (<see cref="partition"/><c>[i]</c>, <see cref="partition"/><c>[i+1]</c>).
         ///</summary>
         private readonly List<int> values = new List<int>();
 
-        public float DomainLo => partition[0];
-        public float DomainUp => partition[^1];
-
         ///<summary>
-        /// Construct the constant zero function on the specified domain [<paramref name="lower"/>, <paramref name="upper"/>].
+        /// Construct the constant zero function.
         ///</summary>
-        public CatchStepFunction(float lower, float upper)
+        public CatchStepFunction()
         {
-            if (!(lower < upper))
-                throw new ArgumentException($"The domain of a {nameof(CatchStepFunction)} must be non-empty.");
-
-            partition.Add(lower);
-            partition.Add(upper);
+            partition.Add(float.NegativeInfinity);
+            partition.Add(float.PositiveInfinity);
             values.Add(0);
         }
 
         ///<summary>
-        /// Construct the step function as the rolling window max function of the <paramref name="input"/> using the window size <paramref name="halfWindowWidth"/>.
-        /// The rolling window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ [-w,+w] }</c>.
-        /// The domain of the resulting function is same as the domain of <paramref name="input"/>.
+        /// Construct the step function as the rolling window max function of the <paramref name="input"/> using the window radius <paramref name="halfWindowSize"/>.
+        /// The rolling window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ -w..+w }</c>.
         ///</summary>
-        public CatchStepFunction(CatchStepFunction input, float halfWindowWidth)
+        public CatchStepFunction(CatchStepFunction input, float halfWindowSize)
         {
-            Trace.Assert(halfWindowWidth > 0);
+            if (!(0 < halfWindowSize && halfWindowSize < float.PositiveInfinity))
+                throw new ArgumentOutOfRangeException(nameof(halfWindowSize), "The window size must be positive.");
 
             // windowsLeft is the index of the first input partition that is strictly greater than the left of the window
             // windowsRight is the index of the first input partition that is strictly greater than the right of the window
             int windowLeft = 0, windowRight;
             Queue<int> window = new Queue<int>();
 
-            float domainLo = input.DomainLo;
-            float domainUp = input.DomainUp;
-
-            // Extend the input function left and right, to simplify things
-            input.partition.Add(domainUp + halfWindowWidth);
-            input.values.Add(0);
-            input.partition.Insert(0, domainLo - halfWindowWidth);
-            input.values.Insert(0, 0);
-
             // Initialising the window.
-            for (windowRight = windowLeft; input.partition[windowRight] <= halfWindowWidth; ++windowRight)
+            for (windowRight = windowLeft; input.partition[windowRight] <= halfWindowSize; ++windowRight)
                 window.Enqueue(input.values[windowRight]);
             var windowMax = window.Max();
             ++windowLeft;
 
-            // At each iteration we slide the windows one step to the right,
-            // adding a new value and partition each time, until the end.
-            partition.Add(domainLo);
+            partition.Add(float.NegativeInfinity);
 
             while (true)
             {
                 values.Add(windowMax);
                 // This distance is used to know if it is the left side or the right side of the windows
                 // that will meet with the next partition first. (or both at the same time if the distance is 0)
-                float distance = input.partition[windowRight] - input.partition[windowLeft] - 2 * halfWindowWidth;
+                float distance = input.partition[windowRight] - input.partition[windowLeft] - 2 * halfWindowSize;
 
-                if (distance <= 0)
+                if (distance <= 0 || float.IsNaN(distance))
                 {
-                    //if we reach the end, stop. The last partition (1) is added after the loop.
+                    // if we reach the end, stop.
                     if (windowRight == input.partition.Count - 1)
                         break;
 
                     windowMax = Math.Max(windowMax, input.values[windowRight]);
                     window.Enqueue(input.values[windowRight]);
-                    partition.Add(input.partition[windowRight] - halfWindowWidth);
+                    partition.Add(input.partition[windowRight] - halfWindowSize);
                     ++windowRight;
                 }
 
@@ -98,7 +83,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 {
                     if (window.Dequeue() == windowMax)
                         windowMax = window.Max();
-                    partition.Add(input.partition[windowLeft] + halfWindowWidth);
+                    partition.Add(input.partition[windowLeft] + halfWindowSize);
                     ++windowLeft;
                 }
 
@@ -107,14 +92,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                     partition.RemoveAt(partition.Count - 1);
             }
 
-            partition.Add(domainUp);
-
-            // Revert the extension
-            input.partition.RemoveAt(0);
-            input.partition.RemoveAt(input.partition.Count - 1);
-            input.values.RemoveAt(0);
-            input.values.RemoveAt(input.values.Count - 1);
-
+            partition.Add(float.PositiveInfinity);
             normalize();
         }
 
@@ -133,6 +111,7 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 }
             }
 
+            // TODO: removing an empty interval can introduce adjacent intervals with the same value
             for (int i = partition.Count - 1; i > 1; --i)
             {
                 if (partition[i] == partition[i - 1])
@@ -144,15 +123,11 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Modify the function to make <paramref name="value"/> is added to the value on the interval [<paramref name="from"/>, <paramref name="to"/>].
+        /// Modify the function to make <paramref name="value"/> is added to the value on the interval (<paramref name="from"/>, <paramref name="to"/>).
         /// Function values outside the interval are unchanged.
         ///</summary>
-        /// <exception cref="ArgumentException">The given interval is not contained in the domain.</exception>
         public void Add(float from, float to, int value)
         {
-            if (!(DomainLo <= from && to <= DomainUp))
-                throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
-
             if (!(from < to)) return;
 
             int indexStart, indexEnd;
@@ -176,15 +151,11 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         /// <summary>
-        /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval [<paramref name="from"/>, <paramref name="to"/>].
+        /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval (<paramref name="from"/>, <paramref name="to"/>).
         /// Function values outside the interval are unchanged.
         /// </summary>
-        /// <exception cref="ArgumentException">The given interval is not contained in the domain.</exception>
         public void Set(float from, float to, int value)
         {
-            if (!(DomainLo <= from && to <= DomainUp))
-                throw new ArgumentException($"The given interval [{from}, {to}] is not contained in the domain [{DomainLo}, {DomainUp}].");
-
             if (!(from < to)) return;
 
             int indexStart, indexEnd;
@@ -208,45 +179,47 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Compute the maximum function value on the *open* interval (<param name="from"></param>, <param name="to"></param>).
+        /// Compute the maximum function value on the interval (<param name="from"></param>, <param name="to"></param>).
         ///</summary>
+        /// <returns>The maximum value in the given interval.</returns>
+        /// <exception cref="ArgumentException">The given interval is empty.</exception>
         public int Max(float from, float to)
         {
-            if (!(from < to)) return 0;
+            if (!(from < to))
+                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
 
-            int max = 0;
+            int? max = null;
 
             for (int i = 0; i < values.Count; ++i)
             {
-                if (values[i] > max && partition[i] < to && partition[i + 1] > from)
+                if ((max == null || values[i] > max) && partition[i] < to && partition[i + 1] > from)
                     max = values[i];
             }
 
-            return max;
+            Debug.Assert(max != null);
+            return max.Value;
         }
 
-        // TODO: endpoints (open vs closed)
         ///<summary>
-        /// Returns a point in the interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>]
-        /// where the function value is maximum in the given interval [<paramref name="from"></paramref>, <paramref name="to"></paramref>].
-        /// Returns <paramref name="target"></paramref> if it works.
-        /// Otherwise, a point furthest away from the suboptimal points is returned.
-        ///</summary>
-        public float OptimalPath(float from, float to, float target)
+        /// Returns a point in the  interval (<paramref name="from"></paramref>, <paramref name="to"></paramref>) taking the maximum value.
+        /// Among all such points, a point furthest away from the suboptimal points is returned (i.e. maximizing <see cref="DistanceToSmaller"/>).
+        /// </summary>
+        /// <returns>An optimal point furthest away from the suboptimal points.</returns>
+        /// <exception cref="ArgumentException">The given interval is empty.</exception>
+        public float GetOptimalPoint(float from, float to)
         {
-            if (!(from <= target && target <= to))
-                throw new ArgumentOutOfRangeException(nameof(target), $"The target {target} is not in the given interval [{from}, {to}].");
+            if (!(from < to))
+                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
 
             int max = Max(from, to);
-            float ret = target, value = -1;
+
+            float ret = -1;
+            float value = -1;
 
             for (int i = 0; i < values.Count; ++i)
             {
-                if (values[i] == max && partition[i] <= to && partition[i + 1] >= from)
+                if (values[i] == max && partition[i] < to && partition[i + 1] > from)
                 {
-                    if (target >= partition[i] && target <= partition[i + 1])
-                        return target;
-
                     // TODO: this is wrong when the mid point is not in the given interval
                     // TODO: also, what if adjacent interval outside the given interval has a larger value?
                     float newValue = partition[i + 1] - partition[i];
@@ -259,7 +232,26 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 }
             }
 
+            Debug.Assert(value != -1);
             return ret;
+        }
+
+        /// <summary>
+        /// Get the distance from <paramref name="x"/> to a point with a function value smaller than <paramref name="value"/>.
+        /// </summary>
+        public float DistanceToSmaller(float x, int value)
+        {
+            int i = partition.BinarySearch(x);
+            if (i < 0) i = ~i;
+            Debug.Assert(i < partition.Count);
+
+            int indexLo = i - 1;
+            while (indexLo >= 0 && values[indexLo] >= value) indexLo--;
+
+            int indexUp = i;
+            while (indexUp < values.Count && values[indexUp] >= value) indexUp++;
+
+            return Math.Min(x - partition[indexLo + 1], partition[indexUp] - x);
         }
     }
 }

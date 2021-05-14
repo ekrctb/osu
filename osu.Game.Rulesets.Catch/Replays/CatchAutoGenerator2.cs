@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Catch.MathUtils;
@@ -22,6 +23,8 @@ namespace osu.Game.Rulesets.Catch.Replays
         protected override void GenerateFrames()
         {
             float halfCatcherWidth = Catcher.CalculateCatchWidth(Beatmap.BeatmapInfo.BaseDifficulty) / 2;
+            Debug.Assert(halfCatcherWidth > 0, "Catcher width must be positive");
+
             const double dash_speed = Catcher.BASE_SPEED;
 
             var objects = new List<PalpableCatchHitObject>();
@@ -55,7 +58,7 @@ namespace osu.Game.Rulesets.Catch.Replays
             //Building the score
             List<CatchStepFunction> scores = new List<CatchStepFunction>();
             List<double> times = new List<double>();
-            scores.Insert(0, new CatchStepFunction(0, CatchPlayfield.WIDTH)); // After the last object, there is no more score to be made
+            scores.Insert(0, new CatchStepFunction()); // After the last object, there is no more score to be made
             times.Insert(0, 1 + objects[^1].StartTime); //some time after the last object
 
             for (int i = objects.Count - 1; i >= 0; --i)
@@ -65,15 +68,18 @@ namespace osu.Game.Rulesets.Catch.Replays
 
                 if (obj.StartTime != times[0])
                 {
+                    // TODO: efficiency is neglected
                     scores.Insert(0, new CatchStepFunction(scores[0], (float)(dash_speed * (times[0] - obj.StartTime))));
+                    scores[0].Set(float.NegativeInfinity, 0, 0);
+                    scores[0].Set(CatchPlayfield.WIDTH, float.PositiveInfinity, 0);
                     times.Insert(0, obj.StartTime);
                 }
 
                 if (obj.HyperDash)
                 {
                     float distance = Math.Abs(obj.HyperDashTarget.EffectiveX - obj.EffectiveX);
-                    scores[0].Set(Math.Max(0, obj.EffectiveX - halfCatcherWidth), Math.Min(CatchPlayfield.WIDTH, obj.EffectiveX + halfCatcherWidth),
-                        scores[1].Max(obj.EffectiveX - distance, obj.EffectiveX + distance));
+                    int maxScore = scores[1].Max(obj.EffectiveX - distance, obj.EffectiveX + distance);
+                    scores[0].Set(obj.EffectiveX - halfCatcherWidth, obj.EffectiveX + halfCatcherWidth, maxScore);
                 }
 
                 scores[0].Add(Math.Max(0, obj.EffectiveX - halfCatcherWidth), Math.Min(CatchPlayfield.WIDTH, obj.EffectiveX + halfCatcherWidth), value);
@@ -127,8 +133,14 @@ namespace osu.Game.Rulesets.Catch.Replays
                 if (obj.StartTime != lastTime)
                 {
                     float movementRange = hyperDashDistance == 0 ? (float)(dash_speed * (times[j] - lastTime)) : hyperDashDistance;
-                    float target = scores[j].OptimalPath(lastPosition - movementRange, lastPosition + movementRange, lastPosition);
-                    moveToNext(target, times[j++]);
+                    float lo = lastPosition - movementRange, up = lastPosition + movementRange;
+                    int max = scores[j].Max(lo, up);
+
+                    // If it is possible to get the maximum score by standing still, don't move.
+                    // Otherwise, move to a position that allows maximum error while getting the maximum score.
+                    var nextPosition = scores[j].DistanceToSmaller(lastPosition, max) > 0 ? lastPosition : scores[j].GetOptimalPoint(lo, up);
+
+                    moveToNext(nextPosition, times[j++]);
                 }
 
                 hyperDashDistance = obj.HyperDash && lastPosition >= obj.EffectiveX - halfCatcherWidth && lastPosition <= obj.EffectiveX + halfCatcherWidth
