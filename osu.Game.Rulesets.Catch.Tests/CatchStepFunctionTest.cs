@@ -24,7 +24,7 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                 for (int testStep = 0; testStep < 10; testStep++)
                 {
-                    switch (rng.Next(3))
+                    switch (rng.Next(4))
                     {
                         case 0:
                         {
@@ -49,6 +49,16 @@ namespace osu.Game.Rulesets.Catch.Tests
                             var (lo, up) = nextInterval();
                             int expected = naive.Max(lo, up);
                             int actual = func.Max(lo, up);
+                            Assert.AreEqual(expected, actual);
+                            break;
+                        }
+
+                        case 3:
+                        {
+                            int x = rng.Next(size + 1);
+                            int value = naive.Get(rng.Next(0, size));
+                            float expected = naive.DistanceToSmaller(x, value);
+                            float actual = func.DistanceToSmaller(x, value);
                             Assert.AreEqual(expected, actual);
                             break;
                         }
@@ -77,12 +87,15 @@ namespace osu.Game.Rulesets.Catch.Tests
                 values = new int[size];
             }
 
+            public int Get(int i) => i < 0 || i >= values.Length ? 0 : values[i];
+
             /// <summary>
             /// Add <paramref name="val"/> to the interval <paramref name="lo"/>..<paramref name="up"/>.
             /// </summary>
             public void Add(int lo, int up, int val)
             {
-                clipInterval(ref lo, ref up);
+                if (lo >= up) return;
+
                 for (int i = lo; i < up; i++)
                     values[i] += val;
             }
@@ -92,7 +105,8 @@ namespace osu.Game.Rulesets.Catch.Tests
             /// </summary>
             public void Set(int lo, int up, int val)
             {
-                clipInterval(ref lo, ref up);
+                if (lo >= up) return;
+
                 for (int i = lo; i < up; i++)
                     values[i] = val;
             }
@@ -102,19 +116,34 @@ namespace osu.Game.Rulesets.Catch.Tests
             /// </summary>
             public int Max(int lo, int up)
             {
-                clipInterval(ref lo, ref up);
-                int max = values[lo];
-                for (int i = lo + 1; i < up; i++)
+                Debug.Assert(lo < up);
+                lo = Math.Max(0, lo);
+                up = Math.Min(up, values.Length);
+
+                int max = 0;
+                for (int i = lo; i < up; i++)
                     max = Math.Max(max, values[i]);
 
                 return max;
             }
 
-            private void clipInterval(ref int lo, ref int up)
+            /// <summary>
+            /// Get the distance from <paramref name="x"/> to a point with a value smaller than <paramref name="value"/>.
+            /// </summary>
+            public float DistanceToSmaller(int x, int value)
             {
-                lo = Math.Max(0, lo);
-                up = Math.Min(up, values.Length);
-                Debug.Assert(lo < up);
+                float distance = float.PositiveInfinity;
+
+                for (int i = 0; i < values.Length; i++)
+                {
+                    if (values[i] < value)
+                        distance = Math.Min(distance, Math.Min(Math.Abs(i - x), Math.Abs(x - (i + 1))));
+                }
+
+                if (value > 0)
+                    distance = Math.Min(distance, Math.Min(Math.Abs(x), Math.Abs(values.Length - x)));
+
+                return distance;
             }
         }
     }

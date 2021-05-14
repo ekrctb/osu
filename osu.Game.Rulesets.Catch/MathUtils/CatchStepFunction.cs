@@ -241,17 +241,19 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         /// </summary>
         public float DistanceToSmaller(float x, int value)
         {
-            int i = partition.BinarySearch(x);
-            if (i < 0) i = ~i;
-            Debug.Assert(i < partition.Count);
+            if (!float.IsFinite(x))
+                throw new ArgumentOutOfRangeException(nameof(x), "The input point must be finite.");
 
-            int indexLo = i - 1;
+            int i = partition.BinarySearch(x);
+            if (i < 0) i = ~i - 1;
+
+            int indexLo = i;
             while (indexLo >= 0 && values[indexLo] >= value) indexLo--;
 
             int indexUp = i;
             while (indexUp < values.Count && values[indexUp] >= value) indexUp++;
 
-            return Math.Min(x - partition[indexLo + 1], partition[indexUp] - x);
+            return indexLo == indexUp ? 0 : Math.Min(x - partition[indexLo + 1], partition[indexUp] - x);
         }
     }
 }
