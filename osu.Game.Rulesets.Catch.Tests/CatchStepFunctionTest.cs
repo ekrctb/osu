@@ -24,12 +24,12 @@ namespace osu.Game.Rulesets.Catch.Tests
 
                 for (int testStep = 0; testStep < 10; testStep++)
                 {
-                    switch (rng.Next(5))
+                    switch (rng.Next(6))
                     {
                         case 0:
                         {
                             var (lo, up) = nextInterval();
-                            int val = rng.Next(1, 5);
+                            int val = rng.Next(0, 4);
                             naive.Add(lo, up, val);
                             func.Add(lo, up, val);
                             break;
@@ -38,7 +38,7 @@ namespace osu.Game.Rulesets.Catch.Tests
                         case 1:
                         {
                             var (lo, up) = nextInterval();
-                            int val = rng.Next(1, 5);
+                            int val = rng.Next(0, 4);
                             naive.Set(lo, up, val);
                             func.Set(lo, up, val);
                             break;
@@ -73,6 +73,26 @@ namespace osu.Game.Rulesets.Catch.Tests
                             Assert.AreEqual(expectedDistance, actualDistance);
                             break;
                         }
+
+                        case 5:
+                        {
+                            int halfWindowSize = rng.Next(1, size / 2 + 1);
+                            var newNaive = new DiscreteStepFunction(naive, halfWindowSize);
+                            var newFunc = new CatchStepFunction(func, halfWindowSize);
+                            newFunc.Set(float.NegativeInfinity, 0, 0);
+                            newFunc.Set(size, float.PositiveInfinity, 0);
+
+                            for (int i = 0; i < size; i++)
+                            {
+                                var expected = newNaive.Max(i, i + 1);
+                                var actual = newFunc.Max(i, i + 1);
+                                Assert.AreEqual(expected, actual);
+                            }
+
+                            naive = newNaive;
+                            func = newFunc;
+                            break;
+                        }
                     }
                 }
 
@@ -96,6 +116,21 @@ namespace osu.Game.Rulesets.Catch.Tests
             public DiscreteStepFunction(int size)
             {
                 values = new int[size];
+            }
+
+            public DiscreteStepFunction(DiscreteStepFunction input, int halfWindowSize)
+            {
+                Debug.Assert(halfWindowSize > 0);
+                int size = input.values.Length;
+                values = new int[size];
+
+                for (int i = 0; i < size; i++)
+                {
+                    int max = int.MinValue;
+                    for (int d = -halfWindowSize; d <= halfWindowSize; d++)
+                        max = Math.Max(max, input.Get(i + d));
+                    values[i] = max;
+                }
             }
 
             public int Get(int i) => i < 0 || i >= values.Length ? 0 : values[i];
