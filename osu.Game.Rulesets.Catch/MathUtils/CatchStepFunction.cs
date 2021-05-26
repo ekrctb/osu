@@ -123,77 +123,72 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 Debug.Assert(values[i] != values[i + 1], "no adjacent pieces with the same value");
         }
 
+        private int splitPiece(float position)
+        {
+            int index = 0;
+            while (index < partition.Count - 1 && partition[index] < position) index++;
+
+            if (position == partition[index]) return index;
+
+            partition.Insert(index, position);
+            values.Insert(index - 1, values[index - 1]);
+            return index;
+        }
+
+        private (int Start, int End) splitPiece(float startPosition, float endPosition)
+        {
+            Debug.Assert(startPosition <= endPosition);
+
+            int startIndex = splitPiece(startPosition);
+            int endIndex = splitPiece(endPosition);
+            return (startIndex, endIndex);
+        }
+
         ///<summary>
-        /// Modify the function to make <paramref name="value"/> is added to the value on the interval (<paramref name="from"/>, <paramref name="to"/>).
+        /// Modify the function to make <paramref name="value"/> is added to the value on the interval (<paramref name="startPosition"/>, <paramref name="endPosition"/>).
         /// Function values outside the interval are unchanged.
         ///</summary>
-        public void Add(float from, float to, int value)
+        public void Add(float startPosition, float endPosition, int value)
         {
-            if (!(from < to)) return;
+            if (!(startPosition < endPosition)) return;
 
-            int indexStart, indexEnd;
-
-            for (indexStart = 0; partition[indexStart] <= from; ++indexStart)
-            {
-            }
-
-            partition.Insert(indexStart, from);
-            values.Insert(indexStart, values[indexStart - 1]);
-
-            for (indexEnd = indexStart; partition[indexEnd] < to; ++indexEnd)
-            {
-            }
-
-            partition.Insert(indexEnd, to);
-            values.Insert(indexEnd - 1, values[indexEnd - 1]);
-            for (int i = indexStart; i < indexEnd; ++i)
+            var range = splitPiece(startPosition, endPosition);
+            for (int i = range.Start; i < range.End; i++)
                 values[i] += value;
+
             normalize();
         }
 
         /// <summary>
-        /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval (<paramref name="from"/>, <paramref name="to"/>).
+        /// Modify the function to make the function takes <paramref name="value"/> constantly on the interval (<paramref name="startPosition"/>, <paramref name="endPosition"/>).
         /// Function values outside the interval are unchanged.
         /// </summary>
-        public void Set(float from, float to, int value)
+        public void Set(float startPosition, float endPosition, int value)
         {
-            if (!(from < to)) return;
+            if (!(startPosition < endPosition)) return;
 
-            int indexStart, indexEnd;
-
-            for (indexStart = 0; partition[indexStart] <= from; ++indexStart)
-            {
-            }
-
-            partition.Insert(indexStart, from);
-            values.Insert(indexStart, values[indexStart - 1]);
-
-            for (indexEnd = indexStart; partition[indexEnd] < to; ++indexEnd)
-            {
-            }
-
-            partition.Insert(indexEnd, to);
-            values.Insert(indexEnd - 1, values[indexEnd - 1]);
-            for (int i = indexStart; i < indexEnd; ++i)
+            var range = splitPiece(startPosition, endPosition);
+            for (int i = range.Start; i < range.End; i++)
                 values[i] = value;
+
             normalize();
         }
 
         ///<summary>
-        /// Compute the maximum function value on the interval (<param name="from"></param>, <param name="to"></param>).
+        /// Compute the maximum function value on the interval (<param name="startPosition"></param>, <param name="endPosition"></param>).
         ///</summary>
         /// <returns>The maximum value in the given interval.</returns>
         /// <exception cref="ArgumentException">The given interval is empty.</exception>
-        public int Max(float from, float to)
+        public int Max(float startPosition, float endPosition)
         {
-            if (!(from < to))
-                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
+            if (!(startPosition < endPosition))
+                throw new ArgumentException($"The given interval ({startPosition}, {endPosition}) must be non-empty.");
 
             int? max = null;
 
             for (int i = 0; i < values.Count; ++i)
             {
-                if ((max == null || values[i] > max) && partition[i] < to && partition[i + 1] > from)
+                if ((max == null || values[i] > max) && partition[i] < endPosition && partition[i + 1] > startPosition)
                     max = values[i];
             }
 
@@ -222,17 +217,17 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         }
 
         ///<summary>
-        /// Returns a point in the interval (<paramref name="from"></paramref>, <paramref name="to"></paramref>) taking the maximum value.
+        /// Returns a point in the interval (<paramref name="startPosition"></paramref>, <paramref name="endPosition"></paramref>) taking the maximum value.
         /// Among all such points, a point furthest away from the suboptimal points is returned (i.e. maximizing <see cref="DistanceToSmaller"/>).
         /// </summary>
         /// <returns>An optimal point furthest away from the suboptimal points.</returns>
         /// <exception cref="ArgumentException">The given interval is empty.</exception>
-        public float GetOptimalPoint(float from, float to)
+        public float GetOptimalPoint(float startPosition, float endPosition)
         {
-            if (!(from < to))
-                throw new ArgumentException($"The given interval ({from}, {to}) must be non-empty.");
+            if (!(startPosition < endPosition))
+                throw new ArgumentException($"The given interval ({startPosition}, {endPosition}) must be non-empty.");
 
-            int max = Max(from, to);
+            int max = Max(startPosition, endPosition);
 
             float ret = -1;
             float value = -1;
@@ -246,12 +241,12 @@ namespace osu.Game.Rulesets.Catch.MathUtils
 
                 float currentUp = partition[i + 1];
 
-                if (currentLo < to && currentUp > from)
+                if (currentLo < endPosition && currentUp > startPosition)
                 {
                     float mid = float.IsFinite(currentLo) && float.IsFinite(currentUp) ? (currentLo + currentUp) / 2 :
                         float.IsFinite(currentLo) ? currentLo :
                         float.IsFinite(currentUp) ? currentUp : 0;
-                    float x = mid <= from ? from : to <= mid ? to : mid;
+                    float x = mid <= startPosition ? startPosition : endPosition <= mid ? endPosition : mid;
                     float dist = Math.Min(x - currentLo, currentUp - x);
 
                     if (value < dist)
