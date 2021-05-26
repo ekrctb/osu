@@ -39,11 +39,10 @@ namespace osu.Game.Rulesets.Catch.MathUtils
 
         private CatchStepFunction(List<float> partition, List<int> values)
         {
-            Debug.Assert(partition.Count == values.Count + 1, "partition.Count == values.Count + 1");
-            Debug.Assert(partition[0] == float.NegativeInfinity && partition[^1] == float.PositiveInfinity, "range is (-infinity, infinity)");
-
             this.partition = partition;
             this.values = values;
+
+            normalize();
         }
 
         /// <summary>
@@ -91,7 +90,16 @@ namespace osu.Game.Rulesets.Catch.MathUtils
         ///</summary>
         private void normalize()
         {
-            for (int i = values.Count - 1; i > 1; --i)
+            for (int i = partition.Count - 1; i > 0; --i)
+            {
+                if (partition[i] == partition[i - 1])
+                {
+                    values.RemoveAt(i - 1);
+                    partition.RemoveAt(i);
+                }
+            }
+
+            for (int i = values.Count - 1; i > 0; --i)
             {
                 if (values[i] == values[i - 1])
                 {
@@ -100,15 +108,19 @@ namespace osu.Game.Rulesets.Catch.MathUtils
                 }
             }
 
-            // TODO: removing an empty interval can introduce adjacent intervals with the same value
-            for (int i = partition.Count - 1; i > 1; --i)
-            {
-                if (partition[i] == partition[i - 1])
-                {
-                    values.RemoveAt(i - 1);
-                    partition.RemoveAt(i);
-                }
-            }
+            assertInvariants();
+        }
+
+        private void assertInvariants()
+        {
+            Debug.Assert(partition.Count == values.Count + 1, "partition.Count == values.Count + 1");
+            Debug.Assert(partition[0] == float.NegativeInfinity && partition[^1] == float.PositiveInfinity, "range is (-infinity, infinity)");
+
+            for (int i = 0; i < partition.Count - 1; i++)
+                Debug.Assert(partition[i] < partition[i + 1], "pieces have positive length");
+
+            for (int i = 0; i < values.Count - 1; i++)
+                Debug.Assert(values[i] != values[i + 1], "no adjacent pieces with the same value");
         }
 
         ///<summary>
