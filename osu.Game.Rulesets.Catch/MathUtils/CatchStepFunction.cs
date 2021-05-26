@@ -55,41 +55,31 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             if (!(0 < halfWindowSize && halfWindowSize < float.PositiveInfinity))
                 throw new ArgumentOutOfRangeException(nameof(halfWindowSize), "The window size must be positive.");
 
-            var events = new List<(float, (bool, int))>();
-
-            for (int i = 0; i < partition.Count - 1; i++)
-            {
-                events.Add((partition[i] - halfWindowSize, (true, i)));
-                events.Add((partition[i + 1] + halfWindowSize, (false, i)));
-            }
-
             var resultPartition = new List<float>();
             var resultValues = new List<int>();
-            var queue = new SlidingMaxQueue<int, int>();
-
-            events.Sort();
+            var queue = new SlidingMaxQueue<float, int>();
 
             resultPartition.Add(float.NegativeInfinity);
 
-            foreach (var (pos, (push, i)) in events)
+            for (int i = 0;; i++)
             {
-                if (push)
-                {
-                    if (!queue.IsEmpty && queue.Max.Value < values[i])
-                    {
-                        resultValues.Add(queue.Max.Value);
-                        resultPartition.Add(pos);
-                    }
-
-                    queue.Enqueue(i, values[i]);
-                }
-                else if (!queue.IsEmpty && queue.Max.Key == i)
+                while (!queue.IsEmpty && queue.Max.Key <= partition[i] - halfWindowSize)
                 {
                     resultValues.Add(queue.Max.Value);
-                    resultPartition.Add(pos);
+                    resultPartition.Add(queue.Max.Key);
 
                     queue.DequeueMax();
                 }
+
+                if (i == partition.Count - 1) break;
+
+                if (!queue.IsEmpty && queue.Max.Value < values[i])
+                {
+                    resultValues.Add(queue.Max.Value);
+                    resultPartition.Add(partition[i] - halfWindowSize);
+                }
+
+                queue.Enqueue(partition[i + 1] + halfWindowSize, values[i]);
             }
 
             return new CatchStepFunction(resultPartition, resultValues);
