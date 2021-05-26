@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace osu.Game.Rulesets.Catch.MathUtils
 {
@@ -38,62 +37,62 @@ namespace osu.Game.Rulesets.Catch.MathUtils
             values.Add(0);
         }
 
-        ///<summary>
-        /// Construct the step function as the rolling window max function of the <paramref name="input"/> using the window radius <paramref name="halfWindowSize"/>.
-        /// The rolling window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ -w..+w }</c>.
-        ///</summary>
-        public CatchStepFunction(CatchStepFunction input, float halfWindowSize)
+        private CatchStepFunction(List<float> partition, List<int> values)
+        {
+            Debug.Assert(partition.Count == values.Count + 1, "partition.Count == values.Count + 1");
+            Debug.Assert(partition[0] == float.NegativeInfinity && partition[^1] == float.PositiveInfinity, "range is (-infinity, infinity)");
+
+            this.partition = partition;
+            this.values = values;
+        }
+
+        /// <summary>
+        /// Create a new step function representing the sliding window maximum of this function.
+        /// The sliding window max function is defined as: <c>g(x) = max { f(x+d) | d ∈ -w..+w }</c>.
+        /// </summary>
+        public CatchStepFunction SlidingWindowMax(float halfWindowSize)
         {
             if (!(0 < halfWindowSize && halfWindowSize < float.PositiveInfinity))
                 throw new ArgumentOutOfRangeException(nameof(halfWindowSize), "The window size must be positive.");
 
-            // windowsLeft is the index of the first input partition that is strictly greater than the left of the window
-            // windowsRight is the index of the first input partition that is strictly greater than the right of the window
-            int windowLeft = 0, windowRight;
-            Queue<int> window = new Queue<int>();
+            var events = new List<(float, (bool, int))>();
 
-            // Initialising the window.
-            for (windowRight = windowLeft; input.partition[windowRight] <= halfWindowSize; ++windowRight)
-                window.Enqueue(input.values[windowRight]);
-            var windowMax = window.Max();
-            ++windowLeft;
-
-            partition.Add(float.NegativeInfinity);
-
-            while (true)
+            for (int i = 0; i < partition.Count - 1; i++)
             {
-                values.Add(windowMax);
-                // This distance is used to know if it is the left side or the right side of the windows
-                // that will meet with the next partition first. (or both at the same time if the distance is 0)
-                float distance = input.partition[windowRight] - input.partition[windowLeft] - 2 * halfWindowSize;
-
-                if (distance <= 0 || float.IsNaN(distance))
-                {
-                    // if we reach the end, stop.
-                    if (windowRight == input.partition.Count - 1)
-                        break;
-
-                    windowMax = Math.Max(windowMax, input.values[windowRight]);
-                    window.Enqueue(input.values[windowRight]);
-                    partition.Add(input.partition[windowRight] - halfWindowSize);
-                    ++windowRight;
-                }
-
-                if (distance >= 0)
-                {
-                    if (window.Dequeue() == windowMax)
-                        windowMax = window.Max();
-                    partition.Add(input.partition[windowLeft] + halfWindowSize);
-                    ++windowLeft;
-                }
-
-                //if we added the same partition twice (moving two steps in a iteration)
-                if (distance == 0)
-                    partition.RemoveAt(partition.Count - 1);
+                events.Add((partition[i] - halfWindowSize, (true, i)));
+                events.Add((partition[i + 1] + halfWindowSize, (false, i)));
             }
 
-            partition.Add(float.PositiveInfinity);
-            normalize();
+            var resultPartition = new List<float>();
+            var resultValues = new List<int>();
+            var queue = new SlidingMaxQueue<int, int>();
+
+            events.Sort();
+
+            resultPartition.Add(float.NegativeInfinity);
+
+            foreach (var (pos, (push, i)) in events)
+            {
+                if (push)
+                {
+                    if (!queue.IsEmpty && queue.Max.Value < values[i])
+                    {
+                        resultValues.Add(queue.Max.Value);
+                        resultPartition.Add(pos);
+                    }
+
+                    queue.Enqueue(i, values[i]);
+                }
+                else if (!queue.IsEmpty && queue.Max.Key == i)
+                {
+                    resultValues.Add(queue.Max.Value);
+                    resultPartition.Add(pos);
+
+                    queue.DequeueMax();
+                }
+            }
+
+            return new CatchStepFunction(resultPartition, resultValues);
         }
 
         ///<summary>

@@ -12,6 +12,16 @@ namespace osu.Game.Rulesets.Catch.Tests
     public class CatchStepFunctionTest
     {
         [Test]
+        public void TestBasic()
+        {
+            var func = new CatchStepFunction();
+            func.Set(0, 1, 3);
+            func.Set(2, 3, 1);
+            var newFunc = func.SlidingWindowMax(1);
+            Assert.AreEqual(1, newFunc.Max(2, 3));
+        }
+
+        [Test]
         public void TestFuzz()
         {
             for (int testCase = 0; testCase < 100000; testCase++)
@@ -78,7 +88,7 @@ namespace osu.Game.Rulesets.Catch.Tests
                         {
                             int halfWindowSize = rng.Next(1, size / 2 + 1);
                             var newNaive = new DiscreteStepFunction(naive, halfWindowSize);
-                            var newFunc = new CatchStepFunction(func, halfWindowSize);
+                            var newFunc = func.SlidingWindowMax(halfWindowSize);
                             newFunc.Set(float.NegativeInfinity, 0, 0);
                             newFunc.Set(size, float.PositiveInfinity, 0);
 

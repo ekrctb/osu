@@ -69,7 +69,7 @@ namespace osu.Game.Rulesets.Catch.Replays
                 if (obj.StartTime != times[0])
                 {
                     // TODO: efficiency is neglected
-                    scores.Insert(0, new CatchStepFunction(scores[0], (float)(dash_speed * (times[0] - obj.StartTime))));
+                    scores.Insert(0, scores[0].SlidingWindowMax((float)(dash_speed * (times[0] - obj.StartTime))));
                     scores[0].Set(float.NegativeInfinity, 0, 0);
                     scores[0].Set(CatchPlayfield.WIDTH, float.PositiveInfinity, 0);
                     times.Insert(0, obj.StartTime);
