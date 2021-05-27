@@ -13,23 +13,17 @@ namespace osu.Game.Rulesets.Objects
     /// </summary>
     internal class SyntheticHitObjectEntry : HitObjectLifetimeEntry
     {
-        private DrawableHitObject? drawableHitObject;
+        public readonly DrawableHitObject? DrawableHitObject;
 
-        internal DrawableHitObject? DrawableHitObject
-        {
-            get => drawableHitObject;
-            set
-            {
-                drawableHitObject = value;
-                SetInitialLifetime();
-            }
-        }
+        protected sealed override double InitialLifetimeOffset => DrawableHitObject?.InitialLifetimeOffset ?? base.InitialLifetimeOffset;
 
-        protected override double InitialLifetimeOffset => drawableHitObject?.InitialLifetimeOffset ?? base.InitialLifetimeOffset;
-
-        public SyntheticHitObjectEntry(HitObject hitObject)
+        public SyntheticHitObjectEntry(DrawableHitObject drawableHitObject, HitObject hitObject)
             : base(hitObject)
         {
+            DrawableHitObject = drawableHitObject;
+            // Initial lifetime is set in base constructor before DrawableHitObject is set.
+            // Recompute the initial lifetime with the DHO's InitialLifetimeOffset.
+            SetInitialLifetime();
         }
     }
 }

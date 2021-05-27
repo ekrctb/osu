@@ -157,13 +157,15 @@ namespace osu.Game.Rulesets.Objects.Drawables
         /// If <c>null</c>, a hitobject is expected to be later applied via <see cref="PoolableDrawableWithLifetime{TEntry}.Apply"/> (or automatically via pooling).
         /// </param>
         protected DrawableHitObject([CanBeNull] HitObject initialHitObject = null)
-            : base(initialHitObject != null ? new SyntheticHitObjectEntry(initialHitObject) : null)
         {
-            if (Entry != null)
-            {
-                ((SyntheticHitObjectEntry)Entry).DrawableHitObject = this;
-                ensureEntryHasResult();
-            }
+            if (initialHitObject != null)
+                setInitialHitObject(initialHitObject);
+        }
+
+        private void setInitialHitObject(HitObject hitObject)
+        {
+            SetInitialEntry(new SyntheticHitObjectEntry(this, hitObject));
+            ensureEntryHasResult();
         }
 
         [BackgroundDependencyLoader]
@@ -214,7 +216,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
             if (hitObject == null)
                 throw new ArgumentNullException($"Cannot apply a null {nameof(HitObject)}.");
 
-            Apply(new SyntheticHitObjectEntry(hitObject));
+            Apply(new SyntheticHitObjectEntry(this, hitObject));
         }
 
         protected sealed override void OnApply(HitObjectLifetimeEntry entry)

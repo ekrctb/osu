@@ -3,7 +3,9 @@
 
 #nullable enable
 
+using System;
 using System.Diagnostics;
+using osu.Framework.Graphics;
 using osu.Framework.Graphics.Performance;
 using osu.Framework.Graphics.Pooling;
 
@@ -57,6 +59,15 @@ namespace osu.Game.Rulesets.Objects.Pooling
 
         protected PoolableDrawableWithLifetime(TEntry? initialEntry = null)
         {
+            if (initialEntry != null)
+                SetInitialEntry(initialEntry);
+        }
+
+        protected void SetInitialEntry(TEntry initialEntry)
+        {
+            if (LoadState > LoadState.NotLoaded)
+                throw new InvalidOperationException($"Cannot set initial entry of a {nameof(PoolableDrawableWithLifetime<TEntry>)} after loading is started");
+
             Entry = initialEntry;
         }
 
