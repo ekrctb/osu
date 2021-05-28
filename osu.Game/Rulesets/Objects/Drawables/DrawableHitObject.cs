@@ -160,7 +160,10 @@ namespace osu.Game.Rulesets.Objects.Drawables
             : base(initialHitObject != null ? new SyntheticHitObjectEntry(initialHitObject) : null)
         {
             if (Entry != null)
+            {
+                ((SyntheticHitObjectEntry)Entry).DrawableHitObject = this;
                 ensureEntryHasResult();
+            }
         }
 
         [BackgroundDependencyLoader]
@@ -216,11 +219,6 @@ namespace osu.Game.Rulesets.Objects.Drawables
 
         protected sealed override void OnApply(HitObjectLifetimeEntry entry)
         {
-            // LifetimeStart is already computed using HitObjectLifetimeEntry's InitialLifetimeOffset.
-            // We override this with DHO's InitialLifetimeOffset for a non-pooled DHO.
-            if (entry is SyntheticHitObjectEntry)
-                LifetimeStart = HitObject.StartTime - InitialLifetimeOffset;
-
             ensureEntryHasResult();
 
             foreach (var h in HitObject.NestedHitObjects)
@@ -635,7 +633,7 @@ namespace osu.Game.Rulesets.Objects.Drawables
         /// For pooled <see cref="DrawableHitObject"/>s, use <see cref="HitObjectLifetimeEntry.InitialLifetimeOffset"/> instead.
         /// </para>
         /// </remarks>
-        protected virtual double InitialLifetimeOffset => 10000;
+        protected internal virtual double InitialLifetimeOffset => 10000;
 
         /// <summary>
         /// The time at which state transforms should be applied that line up to <see cref="HitObject"/>'s StartTime.

@@ -73,7 +73,7 @@ namespace osu.Game.Tests.Gameplay
         private class TestDrawableHitObject : DrawableHitObject
         {
             public const double INITIAL_LIFETIME_OFFSET = 100;
-            protected override double InitialLifetimeOffset => INITIAL_LIFETIME_OFFSET;
+            protected internal override double InitialLifetimeOffset => INITIAL_LIFETIME_OFFSET;
 
             public TestDrawableHitObject(HitObject hitObject)
                 : base(hitObject)
