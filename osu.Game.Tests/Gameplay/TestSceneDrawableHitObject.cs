@@ -3,6 +3,8 @@
 
 using NUnit.Framework;
 using osu.Framework.Testing;
+using osu.Game.Beatmaps;
+using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Drawables;
 using osu.Game.Tests.Visual;
@@ -68,6 +70,44 @@ namespace osu.Game.Tests.Gameplay
                 entry.KeepAlive = false;
             });
             AddAssert("Lifetime is changed", () => entry.LifetimeStart == double.MinValue && entry.LifetimeEnd == 1000);
+        }
+
+        [Test]
+        public void TestDrawableLifetimeUpdatedWhenEntryLifetimeChanged()
+        {
+            TestDrawableHitObject dho = null;
+            TestLifetimeEntry entry = null;
+            AddStep("Create DHO", () =>
+            {
+                dho = new TestDrawableHitObject(null);
+                dho.Apply(entry = new TestLifetimeEntry(new HitObject()));
+                Child = dho;
+            });
+
+            AddStep("Set entry lifetime", () =>
+            {
+                entry.LifetimeStart = 777;
+                entry.LifetimeEnd = 888;
+            });
+            AddAssert("Drawable lifetime is updated", () => dho.LifetimeStart == 777 && dho.LifetimeEnd == 888);
+
+            AddStep("KeepAlive = true", () => entry.KeepAlive = true);
+            AddAssert("Drawable lifetime is updated", () => dho.LifetimeStart == double.MinValue && dho.LifetimeEnd == double.MaxValue);
+
+            AddStep("Modify start time", () => entry.HitObject.StartTime = 100);
+            AddAssert("Drawable lifetime is correct", () => dho.LifetimeStart == double.MinValue);
+
+            AddStep("KeepAlive = false", () => entry.KeepAlive = false);
+            AddAssert("Drawable lifetime is restored", () => dho.LifetimeStart == 100 - TestLifetimeEntry.INITIAL_LIFETIME_OFFSET);
+        }
+
+        [Test]
+        public void TestLifetimeUpdatedOnDefaultApplied()
+        {
+            TestLifetimeEntry entry = null;
+            AddStep("Create entry", () => entry = new TestLifetimeEntry(new HitObject()) { LifetimeStart = 1 });
+            AddStep("ApplyDefaults", () => entry.HitObject.ApplyDefaults(new ControlPointInfo(), new BeatmapDifficulty()));
+            AddAssert("Lifetime is updated", () => entry.LifetimeStart == -TestLifetimeEntry.INITIAL_LIFETIME_OFFSET);
         }
 
         private class TestDrawableHitObject : DrawableHitObject
