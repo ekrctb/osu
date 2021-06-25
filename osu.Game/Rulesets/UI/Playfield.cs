@@ -121,8 +121,18 @@ namespace osu.Game.Rulesets.UI
             }
         }
 
+        /// <remarks>
+        /// It must be invoked after <see cref="DrawableHitObject.ParentHitObject"/> is set but before a <see cref="HitObjectLifetimeEntry"/> is applied.
+        /// </remarks>
         private void onNewDrawableHitObject(DrawableHitObject d)
         {
+            // This is done before Apply() so that the state is updated once when the hitobject is applied.
+            if (mods != null)
+            {
+                foreach (var m in mods.OfType<IApplicableToDrawableHitObject>())
+                    m.ApplyToDrawableHitObject(d);
+            }
+
             d.OnNestedDrawableCreated += onNewDrawableHitObject;
 
             OnNewDrawableHitObject(d);
@@ -347,24 +357,14 @@ namespace osu.Game.Rulesets.UI
             return (DrawableHitObject)pool?.Get(d =>
             {
                 var dho = (DrawableHitObject)d;
+                dho.ParentHitObject = parent;
 
                 if (!dho.IsInitialized)
-                {
                     onNewDrawableHitObject(dho);
-
-                    // If this is the first time this DHO is being used, then apply the DHO mods.
-                    // This is done before Apply() so that the state is updated once when the hitobject is applied.
-                    if (mods != null)
-                    {
-                        foreach (var m in mods.OfType<IApplicableToDrawableHitObject>())
-                            m.ApplyToDrawableHitObject(dho);
-                    }
-                }
 
                 if (!lifetimeEntryMap.TryGetValue(hitObject, out var entry))
                     lifetimeEntryMap[hitObject] = entry = CreateLifetimeEntry(hitObject);
 
-                dho.ParentHitObject = parent;
                 dho.Apply(entry);
             });
         }

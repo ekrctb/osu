@@ -198,12 +198,6 @@ namespace osu.Game.Rulesets.UI
             cancellationToken.ThrowIfCancellationRequested();
 
             Playfield.PostProcess();
-
-            foreach (var mod in Mods.OfType<IApplicableToDrawableHitObject>())
-            {
-                foreach (var drawableHitObject in Playfield.AllHitObjects)
-                    mod.ApplyToDrawableHitObject(drawableHitObject);
-            }
         }
 
         public override void RequestResume(Action continueResume)

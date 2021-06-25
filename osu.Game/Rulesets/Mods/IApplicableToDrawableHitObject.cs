@@ -12,8 +12,11 @@ namespace osu.Game.Rulesets.Mods
     {
         /// <summary>
         /// Applies this <see cref="IApplicableToDrawableHitObject"/> to a <see cref="DrawableHitObject"/>.
-        /// This will only be invoked with top-level <see cref="DrawableHitObject"/>s. Access <see cref="DrawableHitObject.NestedHitObjects"/> if adjusting nested objects is necessary.
         /// </summary>
+        /// <remarks>
+        /// This is invoked for nested <see cref="DrawableHitObject"/>s as well.
+        /// If the effect should only be applied to top-level <see cref="DrawableHitObject"/>s, check for <c>null</c> <see cref="DrawableHitObject.ParentHitObject"/>.
+        /// </remarks>
         void ApplyToDrawableHitObject(DrawableHitObject drawable);
     }
 }

@@ -230,6 +230,10 @@ namespace osu.Game.Rulesets.Objects.Drawables
                                      ?? CreateNestedHitObject(h)
                                      ?? throw new InvalidOperationException($"{nameof(CreateNestedHitObject)} returned null for {h.GetType().ReadableName()}.");
 
+                // This is only necessary for non-pooled DHOs. For pooled DHOs, this is handled inside GetPooledDrawableRepresentation().
+                // Must be done before the nested DHO is added to occur before the nested Apply()!
+                drawableNested.ParentHitObject = this;
+
                 // Only invoke the event for non-pooled DHOs, otherwise the event will be fired by the playfield.
                 if (pooledDrawableNested == null)
                     OnNestedDrawableCreated?.Invoke(drawableNested);
@@ -237,10 +241,6 @@ namespace osu.Game.Rulesets.Objects.Drawables
                 drawableNested.OnNewResult += onNewResult;
                 drawableNested.OnRevertResult += onRevertResult;
                 drawableNested.ApplyCustomUpdateState += onApplyCustomUpdateState;
-
-                // This is only necessary for non-pooled DHOs. For pooled DHOs, this is handled inside GetPooledDrawableRepresentation().
-                // Must be done before the nested DHO is added to occur before the nested Apply()!
-                drawableNested.ParentHitObject = this;
 
                 nestedHitObjects.Add(drawableNested);
                 AddNestedHitObject(drawableNested);
