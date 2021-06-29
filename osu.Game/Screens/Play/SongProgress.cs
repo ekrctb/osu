@@ -123,6 +123,7 @@ namespace osu.Game.Screens.Play
 
                 referenceClock = drawableRuleset.FrameStableClock;
                 Objects = drawableRuleset.Objects;
+                info.DisplayTimeOffset = drawableRuleset.DisplayTimeOffset;
             }
 
             config.BindWith(OsuSetting.ShowProgressGraph, ShowGraph);

@@ -36,6 +36,8 @@ namespace osu.Game.Screens.Play
             set => endTime = value;
         }
 
+        public double DisplayTimeOffset { get; set; }
+
         private GameplayClock gameplayClock;
 
         [BackgroundDependencyLoader(true)]
@@ -86,7 +88,7 @@ namespace osu.Game.Screens.Play
 
             double songCurrentTime = time - startTime;
             int currentPercent = Math.Max(0, Math.Min(100, (int)(songCurrentTime / songLength * 100)));
-            int currentSecond = (int)Math.Floor(songCurrentTime / 1000.0);
+            int currentSecond = (int)Math.Floor((DisplayTimeOffset + songCurrentTime) / 1000.0);
 
             if (currentPercent != previousPercent)
             {

@@ -466,6 +466,8 @@ namespace osu.Game.Rulesets.UI
         /// </summary>
         public abstract double GameplayStartTime { get; }
 
+        public double DisplayTimeOffset { get; set; }
+
         /// <summary>
         /// The currently loaded replay. Usually null in the case of a local player.
         /// </summary>
