@@ -42,10 +42,18 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
                     return true;
 
                 case PlacementState.Active:
-                    if (e.Button != MouseButton.Right) break;
+                    switch (e.Button)
+                    {
+                        case MouseButton.Left:
+                            addLinearSegment();
+                            break;
 
-                    EndPlacement(HitObject.Duration > 0);
-                    return true;
+                        case MouseButton.Right:
+                            EndPlacement(HitObject.Duration > 0);
+                            return true;
+                    }
+
+                    break;
             }
 
             return base.OnMouseDown(e);
