@@ -38,6 +38,7 @@ namespace osu.Game.Rulesets.Objects
         public readonly BindableList<PathControlPoint> ControlPoints = new BindableList<PathControlPoint>();
 
         private readonly List<Vector2> calculatedPath = new List<Vector2>();
+        private readonly List<int> controlPointVertexIndex = new List<int>();
         private readonly List<double> cumulativeLength = new List<double>();
         private readonly Cached pathCache = new Cached();
 
@@ -189,6 +190,21 @@ namespace osu.Game.Rulesets.Objects
             return pointsInCurrentSegment;
         }
 
+        /// <summary>
+        /// Computes the distance at the control point of given index.
+        /// If the control point was not an end point of a sub-path, returns the distance at the start of the sub-path.
+        /// </summary>
+        public double DistanceAtControlPointIndex(int index)
+        {
+            if (index < 0 || index >= ControlPoints.Count)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            ensureValid();
+            int vertexIndex = controlPointVertexIndex[index];
+            // `Min` is necessary because some vertices at the end might be truncated due to the expected distance logic.
+            return cumulativeLength[Math.Min(vertexIndex, cumulativeLength.Count - 1)];
+        }
+
         private void invalidate()
         {
             pathCache.Invalidate();
@@ -209,6 +225,7 @@ namespace osu.Game.Rulesets.Objects
         private void calculatePath()
         {
             calculatedPath.Clear();
+            controlPointVertexIndex.Clear();
 
             if (ControlPoints.Count == 0)
                 return;
@@ -222,7 +239,10 @@ namespace osu.Game.Rulesets.Objects
             for (int i = 0; i < ControlPoints.Count; i++)
             {
                 if (ControlPoints[i].Type.Value == null && i < ControlPoints.Count - 1)
+                {
+                    controlPointVertexIndex.Add(calculatedPath.Count - 1);
                     continue;
+                }
 
                 // The current vertex ends the segment
                 var segmentVertices = vertices.AsSpan().Slice(start, i - start + 1);
@@ -233,6 +253,8 @@ namespace osu.Game.Rulesets.Objects
                     if (calculatedPath.Count == 0 || calculatedPath.Last() != t)
                         calculatedPath.Add(t);
                 }
+
+                controlPointVertexIndex.Add(calculatedPath.Count - 1);
 
                 // Start the new segment at the current vertex
                 start = i;
