@@ -2,6 +2,7 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using osu.Framework.Graphics;
 using osu.Framework.Input.Events;
 using osu.Game.Rulesets.Catch.Edit.Blueprints.Components;
 using osu.Game.Rulesets.Catch.Objects;
@@ -17,9 +18,21 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
     {
         private readonly ScrollingPath scrollingPath;
 
+        // Only shown during "waiting" state.
+        private readonly FruitOutline startFruitOutline;
+
+        private readonly NestedOutlineContainer nestedOutlineContainer;
+
+        private bool isEmpty;
+
         public JuiceStreamPlacementBlueprint()
         {
-            InternalChild = scrollingPath = new ScrollingPath();
+            InternalChildren = new Drawable[]
+            {
+                scrollingPath = new ScrollingPath(),
+                startFruitOutline = new FruitOutline(),
+                nestedOutlineContainer = new NestedOutlineContainer(),
+            };
         }
 
         protected override void Update()
@@ -27,6 +40,21 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
             base.Update();
 
             scrollingPath.UpdatePositionFrom(HitObjectContainer, HitObject);
+            nestedOutlineContainer.UpdatePositionFrom(HitObjectContainer, HitObject);
+
+            if (PlacementActive == PlacementState.Waiting)
+            {
+                startFruitOutline.UpdateFrom(HitObjectContainer, HitObject);
+                return;
+            }
+
+            bool wasEmpty = isEmpty;
+            isEmpty = HitObject.Duration == 0;
+            if (wasEmpty == isEmpty) return;
+
+            // When the duration is zero, "start" and "end" fruits are overlapped.
+            // Use a half of desired alpha to compensate that.
+            nestedOutlineContainer.FadeTo(isEmpty ? 0.25f : 1);
         }
 
         protected override bool OnMouseDown(MouseDownEvent e)
@@ -39,6 +67,8 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
                     BeginPlacement(true);
                     HitObject.Path.ControlPoints.Add(new PathControlPoint());
                     addLinearSegment();
+
+                    startFruitOutline.Hide();
                     return true;
 
                 case PlacementState.Active:
@@ -74,7 +104,11 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
 
                 case PlacementState.Active:
                     moveCurrentSegmentTowards(time, x);
+
+                    ApplyDefaultsToHitObject();
+
                     scrollingPath.UpdatePathFrom(HitObjectContainer, HitObject);
+                    nestedOutlineContainer.UpdateNestedObjectsFrom(HitObjectContainer, HitObject);
                     break;
             }
         }
@@ -85,6 +119,7 @@ namespace osu.Game.Rulesets.Catch.Edit.Blueprints
             lastControlPoint.Type.Value = PathType.Linear;
 
             HitObject.Path.ControlPoints.Add(new PathControlPoint());
+            ApplyDefaultsToHitObject();
         }
 
         private void moveCurrentSegmentTowards(double time, float x)
